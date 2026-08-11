@@ -9,7 +9,7 @@ function App() {
   const [Cadangan, SetCadangan] = useState("");
 
   const Send = async () => {
-    const Response = await fetch("http://localhost:5500/Hantar", {
+    const Response = await fetch("http://107.174.65.104:5500/Hantar", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -23,6 +23,7 @@ function App() {
     });
 
     if (Response.ok) {
+      window.location.reload();
       console.log("OK");
     }
   };
