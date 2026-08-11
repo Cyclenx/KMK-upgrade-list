@@ -50,10 +50,10 @@ export default function App() {
             
             <div className="flex flex-col justify-center">
               <span className="text-gray-500 text-sm tracking-wider font-semibold uppercase mb-[-2px]">
-                Laman Web Rasmi
+                Laman Web Rasmi JPP KMK
               </span>
               <h1 className="text-3xl md:text-4xl font-extrabold text-black tracking-tight uppercase leading-none">
-                Kolej Matrikulasi Kedah
+                JABATAN PERWAKILAN PELAJAR KMK
               </h1>
             </div>
           </div>
