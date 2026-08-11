@@ -2,11 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import Report from './page/Report.jsx';
+import Home from './page/Home.jsx'
 import reportWebVitals from './reportWebVitals';
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 
 const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Home />
+  },
   {
     path: "/Cadangan",
     element: <Report />
