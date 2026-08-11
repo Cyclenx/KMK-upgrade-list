@@ -19,6 +19,8 @@ import {
 
 import { useNavigate } from "react-router";
 
+import LogoJppKMK from "../logo kmk jpp.jpeg"; 
+
 export default function App() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const Navigation = useNavigate();
@@ -55,34 +57,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           {/* Logo and Title area */}
           <div className="flex items-center gap-4">
-            {/* Simulated Logo (using CSS shapes since we don't have the image file) */}
-            <div className="relative w-20 h-20 rounded-full bg-white border-2 border-red-600 flex items-center justify-center overflow-hidden flex-shrink-0">
-              <div className="absolute inset-0 flex items-center justify-center rotate-45">
-                <div className="w-16 h-8 rounded-full border-4 border-blue-600 absolute"></div>
-                <div className="w-8 h-16 rounded-full border-4 border-yellow-400 absolute"></div>
-              </div>
-              <div
-                className="absolute top-1 w-full text-[6px] text-center font-bold text-red-600 tracking-tighter"
-                style={{ transform: "rotate(-25deg) translateY(-2px)" }}
-              >
-                KOLEJ MATRIKULASI
-              </div>
-              <div
-                className="absolute bottom-1 w-full text-[6px] text-center font-bold text-blue-800 tracking-tighter"
-                style={{ transform: "rotate(25deg) translateY(2px)" }}
-              >
-                KEDAH
-              </div>
-            </div>
-
-            <div className="flex flex-col justify-center">
-              <span className="text-gray-500 text-sm tracking-wider font-semibold uppercase mb-[-2px]">
-                Laman Web Rasmi JPP KMK
-              </span>
-              <h1 className="text-3xl md:text-4xl font-extrabold text-black tracking-tight uppercase leading-none">
-                JABATAN PERWAKILAN PELAJAR KMK
-              </h1>
-            </div>
+            <img src={LogoJppKMK} alt="Logo KMK" className="h-24 w-auto" />
           </div>
 
           {/* Right side interactions */}

@@ -4,6 +4,7 @@ import './index.css';
 import Report from './page/Report.jsx';
 import Home from './page/Home.jsx'
 import reportWebVitals from './reportWebVitals';
+import organisasi from './page/organisasi.jsx'; 
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 
@@ -12,6 +13,10 @@ const router = createBrowserRouter([
     path: "/",
     element: <Home />
   },
+  {
+    path: "/organisasi",
+    element: <organisasi /> 
+   },
   {
     path: "/Cadangan",
     element: <Report />
