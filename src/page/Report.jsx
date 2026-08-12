@@ -8,9 +8,9 @@ function App() {
   const [NoTel, SetNoTel] = useState("");
   const [Cadangan, SetCadangan] = useState("");
 
-  
+
   const Send = async () => {
-    const Response = await fetch("http://107.174.65.104:5500/Hantar", {
+    const Response = await fetch("http://107.174.65.104:5300/Hantar", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
