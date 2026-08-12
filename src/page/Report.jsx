@@ -10,7 +10,7 @@ function App() {
 
 
   const Send = async () => {
-    const Response = await fetch("http://107.174.65.104:5300/Hantar", {
+    const Response = await fetch("https://jpp-api.yeke-hub.dev/Hantar", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
