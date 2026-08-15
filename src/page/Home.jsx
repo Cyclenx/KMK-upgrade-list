@@ -27,8 +27,8 @@ export default function App() {
 
   // Placeholder images for the carousel to make it functional
   const carouselImages = [
-    "logo kmk jpp.jpeg", // Simulated campus/outdoor sign
-    "https://lh3.googleusercontent.com/d/1COQMYUgHouYdk8EmcI4RGMnEahzd7lDM", // University building
+    "https://lh3.googleusercontent.com/d/1COQMYUgHouYdk8EmcI4RGMnEahzd71DM", // Simulated campus/outdoor sign
+    "https://lh3.googleusercontent.com/d/1COQMYUgHouYdk8EmcI4RGMnEahzd71DM", // University building
     "https://lh3.googleusercontent.com/d/1COQMYUgHouYdk8EmcI4RGMnEahzd71DM", // Students
   ];
 
