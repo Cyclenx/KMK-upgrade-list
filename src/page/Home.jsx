@@ -28,8 +28,8 @@ export default function App() {
   // Placeholder images for the carousel to make it functional
   const carouselImages = [
     "logo kmk jpp.jpeg", // Simulated campus/outdoor sign
-    "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070&auto=format&fit=crop", // University building
-    "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070&auto=format&fit=crop", // Students
+    "https://lh3.googleusercontent.com/d/1COQMYUgHouYdk8EmcI4RGMnEahzd7lDM", // University building
+    "https://lh3.googleusercontent.com/d/1COQMYUgHouYdk8EmcI4RGMnEahzd71DM", // Students
   ];
 
   const nextSlide = () => {
