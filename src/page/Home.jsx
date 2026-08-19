@@ -29,7 +29,7 @@ export default function App() {
   const carouselImages = [
     "https://lh3.googleusercontent.com/d/1COQMYUgHouYdk8EmcI4RGMnEahzd71DM", // Simulated campus/outdoor sign
     "https://lh3.googleusercontent.com/d/1COQMYUgHouYdk8EmcI4RGMnEahzd71DM", // University building
-    "https://lh3.googleusercontent.com/d/1COQMYUgHouYdk8EmcI4RGMnEahzd71DM", // Students
+    "https://lh3.googleusercontent.com/d/1U3gHUUdKcm-wngszK2cuI-V0_dd5kILt", // Students
   ];
 
   const nextSlide = () => {
