@@ -145,7 +145,7 @@ export default function App() {
               <a
                onClick={() => {
                 Navigation("/organisasi");
-               }
+               }}
               <div className="flex items-center gap-2 px-6 py-4 text-gray-200 text-sm font-medium hover:text-white transition-colors border-b-2 border-transparent hover:border-gray-400">
                 <Users size={16} />
                 <span>Organisasi</span>
