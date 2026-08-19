@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import Report from './page/Report.jsx';
-import Organisasi from './page/organisasi';
+import Organisasi from './page/organisasi.jsx';
 import Home from './page/Home.jsx'
 import reportWebVitals from './reportWebVitals';
 import { createBrowserRouter } from "react-router";
@@ -15,7 +15,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/organisasi",
-    element: <organisasi />
+    element: <Organisasi />
   },
   {
     path: "/Cadangan",
