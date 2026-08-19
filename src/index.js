@@ -15,7 +15,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/organisasi",
-    element: <Organisasi />
+    element: <organisasi />
   },
   {
     path: "/Cadangan",
