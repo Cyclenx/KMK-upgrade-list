@@ -330,6 +330,57 @@ export default function App() {
         </section>
       </main>
 
+       {/* Seksyen Mengenai Kami / Footer */}
+      <footer className="bg-[#1f1d6b] text-white pt-12 pb-8 border-t-4 border-orange-500 mt-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          {/* Info Kolej */}
+          <div>
+            <h3 className="text-lg font-bold uppercase tracking-wider mb-4 border-b border-indigo-400/30 pb-2 text-white">
+              Mengenai KMK
+            </h3>
+            <p className="text-gray-300 text-sm leading-relaxed">
+              Kolej Matrikulasi Kedah (KMK) merupakan institusi pendidikan pra-universiti di bawah Kementerian Pendidikan Malaysia yang komited melahirkan modal insan cemerlang dalam bidang akademik, sahsiah, dan kokurikulum.
+            </p>
+          </div>
+
+          {/* Visi & Misi */}
+          <div>
+            <h3 className="text-lg font-bold uppercase tracking-wider mb-4 border-b border-indigo-400/30 pb-2 text-white">
+              Visi & Misi
+            </h3>
+            <div className="text-sm text-gray-300 space-y-2 leading-relaxed">
+              <p>
+                <span className="font-semibold text-orange-400">Visi:</span> Penjana unggul pelajar pra-universiti berkualiti ke peringkat pengajian tinggi.
+              </p>
+              <p>
+                <span className="font-semibold text-orange-400">Misi:</span> Membangunkan potensi pelajar dalam bidang sains, teknologi, dan profesionalisme melalui pendidikan berkualiti.
+              </p>
+            </div>
+          </div>
+
+          {/* Alamat & Hubungan */}
+          <div>
+            <h3 className="text-lg font-bold uppercase tracking-wider mb-4 border-b border-indigo-400/30 pb-2 text-white">
+              Hubungi Kami
+            </h3>
+            <address className="not-italic text-sm text-gray-300 space-y-2 leading-relaxed">
+              <p>Kolej Matrikulasi Kedah,<br />06010 Changlun, Kedah Darul Aman.</p>
+              <p className="pt-1">
+                <span className="text-gray-400">Tel:</span> 04-928 6100<br />
+                <span className="text-gray-400">Faks:</span> 04-928 6111
+              </p>
+            </address>
+          </div>
+
+        </div>
+
+        {/* Hak Cipta */}
+        <div className="max-w-7xl mx-auto px-4 mt-8 pt-6 border-t border-indigo-900/60 text-center text-xs text-gray-400">
+          © {new Date().getFullYear()} Kolej Matrikulasi Kedah. Hak Cipta Terpelihara.
+        </div>
+      </footer>
+
       {}
       <div className="fixed bottom-6 left-6 z-50">
         <button
