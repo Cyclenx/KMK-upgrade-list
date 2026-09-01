@@ -6,7 +6,7 @@ const OrganizationPage = () => {
       id: 1,
       name: "Majlis Tertinggi",
       members: [
-        { id: 101, name: "Ahmad Hafiz", role: "Yang Dipertua", image: "/images/mt-1.jpg" },
+        { id: 101, name: "Zawir Danish", role: "Yang Dipertua", image: "/images/mt-1.jpg" },
         { id: 102, name: "Nur Aisyah", role: "Naib Yang Dipertua I", image: "/images/mt-2.jpg" },
         { id: 103, name: "Muhammad Daniel", role: "Naib Yang Dipertua II", image: "/images/mt-3.jpg" },
         { id: 104, name: "Siti Sarah", role: "Setiausaha Kehormat", image: "/images/mt-4.jpg" },
