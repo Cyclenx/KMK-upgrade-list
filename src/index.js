@@ -4,6 +4,7 @@ import './index.css';
 import Report from './page/Report.jsx';
 import Organisasi from './page/organisasi.jsx';
 import Home from './page/Home.jsx'
+import MemberProfile from './page/MemberProfile.jsx';
 import reportWebVitals from './reportWebVitals';
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
   {
     path: "/Cadangan",
     element: <Report />
+  },
+  {
+    path: "/member/:id",
+    element: <MemberProfile />
   }
 ])
 const root = ReactDOM.createRoot(document.getElementById('root'));
