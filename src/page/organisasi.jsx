@@ -149,7 +149,7 @@ const OrganizationPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
         <div className="text-center mb-12">
           <span className="text-xs font-bold uppercase tracking-widest text-cyan-600 bg-cyan-50 px-3 py-1 rounded-full border border-cyan-200">
-            Sesi 2024/2025
+            Sesi 2026/2027
           </span>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1f1d6b] mt-3 tracking-tight">
             Carta Organisasi JPP KMK
