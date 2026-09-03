@@ -175,7 +175,7 @@ const OrganizationPage = () => {
               {/* Slider Kad Ahli (Horizontal Scroll) */}
               <div className="flex overflow-x-auto space-x-4 pb-4 no-scrollbar snap-x">
                 {group.members.map((member) => {
-                  const imagePath = `../image/${group.folder}/${member.file}`;
+                  const imagePath = `./image/${group.folder}/${member.file}`;
                   const imageSrc = memberImages[imagePath];
                   const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(
                     member.name
