@@ -106,7 +106,7 @@ export default function App() {
       link: "/organisasi",
       linkText: "Ketahui lagi",
       image:
-        "https://lh3.googleusercontent.com/d/1iIbsr0ysICviKS9a0-iD9UFRdSce-p7Q",
+        "https://lh3.googleusercontent.com/d/1OZI0j5jFNtxyeweC7tIcFy_lrNpvZsC_",
     },
     {
       id: 1,
