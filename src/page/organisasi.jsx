@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
+<<<<<<< HEAD
 import { ArrowLeft, Users, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
+=======
+import { ArrowLeft, Users, ChevronRight } from "lucide-react";
+>>>>>>> refs/remotes/origin/main
 import { useNavigate } from "react-router";
 
 // Imbas semua gambar di dalam folder src/image/ secara synchronous
@@ -37,7 +41,13 @@ function RevealOnScroll({ children, delay = 0, className = "" }) {
       ref={domRef}
       style={{ transitionDelay: `${delay}ms` }}
       className={`transform transition-all duration-700 ease-out will-change-transform ${
+<<<<<<< HEAD
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+=======
+        isVisible
+          ? "opacity-100 translate-y-0"
+          : "opacity-0 translate-y-12"
+>>>>>>> refs/remotes/origin/main
       } ${className}`}
     >
       {children}
@@ -45,6 +55,7 @@ function RevealOnScroll({ children, delay = 0, className = "" }) {
   );
 }
 
+<<<<<<< HEAD
 // Komponen 1 Biro: 3D Curved Cover-Flow
 function BureauFocusSlider({ group, navigate }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -203,6 +214,8 @@ function BureauFocusSlider({ group, navigate }) {
   );
 }
 
+=======
+>>>>>>> refs/remotes/origin/main
 const OrganizationPage = () => {
   const navigate = useNavigate();
 
@@ -211,7 +224,10 @@ const OrganizationPage = () => {
       id: 1,
       name: "Majlis Tertinggi",
       folder: "MT",
+<<<<<<< HEAD
       peranan: "Merangka dasar pentadbiran, memimpin hal tuju kepimpinan serta menyelaras hubungan antara mahasiswa dan pengurusan kolej.",
+=======
+>>>>>>> refs/remotes/origin/main
       members: [
         { id: 101, name: "MOHAMAD ZAWIR DANISH BIN MOHAMAD ZARIR", role: "Yang Dipertua", file: "test.png" },
         { id: 102, name: "Nur Aisyah", role: "Naib Yang Dipertua I", file: "02-nydp1.png" },
@@ -314,7 +330,10 @@ const OrganizationPage = () => {
       id: 8,
       name: "Kebajikan",
       folder: "08-kebajikan",
+<<<<<<< HEAD
       peranan: "Menjaga kesejahteraan hidup pelajar, menguruskan bantuan kecemasan, dana prihatin serta mengendalikan saluran aduan mahasiswa.",
+=======
+>>>>>>> refs/remotes/origin/main
       members: [
         { id: 801, name: "Nik Azhar", role: "Ketua Biro", file: "01-ketua.png" },
         { id: 802, name: "Nur Salsabila", role: "Penolong Ketua Biro", file: "02-penolong.png" },
@@ -331,7 +350,12 @@ const OrganizationPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-gray-800 pb-24 selection:bg-cyan-500 selection:text-white">
+<<<<<<< HEAD
       <nav className="sticky top-0 z-40 bg-[#1f1d6b]/95 backdrop-blur-md text-white py-4 px-4 sm:px-6 lg:px-8 shadow-md border-b-2 border-cyan-400">
+=======
+      {/* Bar Atas Sticky */}
+      <nav className="sticky top-0 z-30 bg-[#1f1d6b]/95 backdrop-blur-md text-white py-4 px-4 sm:px-6 lg:px-8 shadow-md border-b-2 border-cyan-400">
+>>>>>>> refs/remotes/origin/main
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <button
             onClick={() => navigate("/")}
@@ -348,8 +372,14 @@ const OrganizationPage = () => {
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 sm:mt-14">
+<<<<<<< HEAD
         <RevealOnScroll delay={100}>
           <div className="text-center mb-12">
+=======
+        {/* Tajuk Halaman dengan Animasi */}
+        <RevealOnScroll delay={100}>
+          <div className="text-center mb-14">
+>>>>>>> refs/remotes/origin/main
             <span className="inline-block text-[11px] font-bold uppercase tracking-widest text-cyan-700 bg-cyan-50 px-3.5 py-1 rounded-full border border-cyan-200 shadow-sm">
               Sesi 2026/2027
             </span>
@@ -357,15 +387,97 @@ const OrganizationPage = () => {
               Carta Organisasi JPP KMK
             </h1>
             <p className="text-xs sm:text-sm text-gray-500 max-w-lg mx-auto mt-2.5 leading-relaxed">
+<<<<<<< HEAD
               Pilih dan fokus pada barisan exco biro. Klik kad di bahagian tengah untuk membuka profil penuh.
+=======
+              Barisan Majlis Tertinggi dan Exco Biro Jawatankuasa Perwakilan Pelajar Kolej Matrikulasi Kedah. Klik mana-mana profil untuk melihat maklumat lanjut.
+>>>>>>> refs/remotes/origin/main
             </p>
           </div>
         </RevealOnScroll>
 
+<<<<<<< HEAD
         <div className="space-y-12">
           {groups.map((group, idx) => (
             <RevealOnScroll key={group.id} delay={idx * 60}>
               <BureauFocusSlider group={group} navigate={navigate} />
+=======
+        {/* Bahagian Biro & Slider Kad */}
+        <div className="space-y-14">
+          {groups.map((group, gIdx) => (
+            <RevealOnScroll key={group.id} delay={gIdx * 70}>
+              <section className="w-full bg-white/60 backdrop-blur-sm p-4 sm:p-6 rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow">
+                {/* Header Biro */}
+                <div className="flex items-center justify-between mb-5 border-l-4 border-cyan-500 pl-3.5">
+                  <div>
+                    <h2 className="text-lg sm:text-xl font-extrabold text-[#1f1d6b]">
+                      {group.name}
+                    </h2>
+                    <p className="text-[11px] text-gray-400 hidden sm:block">
+                      Tatal secara mendatar untuk melihat barisan exco
+                    </p>
+                  </div>
+                  <span className="text-xs bg-indigo-50 text-[#1f1d6b] border border-indigo-100/80 px-3 py-1 rounded-full font-bold shadow-xs">
+                    {group.members.length} Ahli
+                  </span>
+                </div>
+
+                {/* Kontena Kad (Scroll Horizontal) */}
+                <div className="flex overflow-x-auto space-x-4 pb-3 pt-1 no-scrollbar snap-x scroll-smooth">
+                  {group.members.map((member, mIdx) => {
+                    const imagePath = `../image/${group.folder}/${member.file}`;
+                    const imageSrc = memberImages[imagePath];
+                    const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                      member.name
+                    )}&background=1f1d6b&color=fff&size=256`;
+
+                    return (
+                      <div
+                        key={member.id}
+                        onClick={() => navigate(`/organisasi/${member.id}`)}
+                        style={{ animationDelay: `${mIdx * 40}ms` }}
+                        className="group flex-shrink-0 w-44 sm:w-48 bg-white rounded-2xl shadow-xs hover:shadow-xl hover:shadow-cyan-500/10 hover:-translate-y-2 transition-all duration-300 border border-slate-200/80 hover:border-cyan-400/80 overflow-hidden snap-start flex flex-col cursor-pointer"
+                        title={`Klik untuk lihat profil ${member.name}`}
+                      >
+                        {/* Bingkai Gambar */}
+                        <div className="w-full h-56 bg-slate-100 overflow-hidden relative">
+                          <img
+                            src={imageSrc || fallbackAvatar}
+                            alt={member.name}
+                            loading="lazy"
+                            className="w-full h-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-108"
+                            onError={(e) => {
+                              e.target.src = fallbackAvatar;
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-2.5">
+                            <span className="text-[10px] text-cyan-300 font-medium flex items-center gap-0.5">
+                              Lihat Profil <ChevronRight size={12} />
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Maklumat Ahli */}
+                        <div className="p-3.5 text-center flex flex-col justify-center flex-grow bg-white">
+                          <p
+                            className="text-xs sm:text-sm font-bold text-gray-900 line-clamp-1 group-hover:text-cyan-600 transition-colors"
+                            title={member.name}
+                          >
+                            {member.name}
+                          </p>
+                          <span
+                            className="inline-block mt-1.5 text-[10px] sm:text-[11px] font-semibold text-cyan-800 bg-cyan-50/80 border border-cyan-200/60 px-2.5 py-0.5 rounded-full truncate"
+                            title={member.role}
+                          >
+                            {member.role}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+>>>>>>> refs/remotes/origin/main
             </RevealOnScroll>
           ))}
         </div>
