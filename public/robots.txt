@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://jpp-kmk.yeke-hub.dev/sitemap.xml
+Sitemap: https://jppkmk.com/sitemap.xml

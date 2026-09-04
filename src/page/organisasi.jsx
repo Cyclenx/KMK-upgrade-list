@@ -18,7 +18,7 @@ const OrganizationPage = () => {
       folder: "MT",
       // Kumpulan ini mempunyai 6 orang ahli
       members: [
-        { id: 101, name: "Zawir Danish", role: "Yang Dipertua", file: "test.png" },
+        { id: 101, name: "MOHAMAD ZAWIR DANISH BIN MOHAMAD ZARIR", role: "Yang Dipertua", file: "test.png" },
         { id: 102, name: "Nur Aisyah", role: "Naib Yang Dipertua I", file: "02-nydp1.png" },
         { id: 103, name: "Muhammad Daniel", role: "Naib Yang Dipertua II", file: "03-nydp2.png" },
         { id: 104, name: "Siti Sarah", role: "Setiausaha Kehormat", file: "04-setiausaha.png" },
