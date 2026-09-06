@@ -130,6 +130,15 @@ export default function App() {
       image:
         "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1600&auto=format&fit=crop",
     },
+    {
+      id: 3,
+      tabTitle: "Inovasi",
+      headline: "Memacu Digitalisas",
+      description:
+        "Mengintegrasikan pembelajaran pintar dan aplikasi digital interaktif bagi memperkasa daya saing warga kolej ke peringkat global.",
+      image:
+        "zawir.jpg",
+    }
   ];
 
   const managementList = [

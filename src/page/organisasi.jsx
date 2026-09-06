@@ -125,7 +125,7 @@ function BureauFocusSlider({ group, navigate }) {
                     : "border-slate-200 hover:border-cyan-300"
                 }`}
               >
-                <div className="w-full h-56 sm:h-64 bg-slate-100 overflow-hidden relative shrink-0">
+                <div className="w-full h-67 sm:h-80 bg-slate-100 overflow-hidden relative shrink-0">
                   <img
                     src={imageSrc || fallbackAvatar}
                     alt={member.name}
@@ -212,8 +212,8 @@ const OrganizationPage = () => {
       folder: "MT",
       peranan: "Merangka dasar pentadbiran, memimpin hal tuju kepimpinan serta menyelaras hubungan antara mahasiswa dan pengurusan kolej.",
       members: [
-        { id: 101, name: "MOHAMAD ZAWIR DANISH BIN MOHAMAD ZARIR", role: "Yang Dipertua", file: "ZAWIR_ydp.jpg" },
-        { id: 102, name: "Nur Aisyah", role: "Naib Yang Dipertua I", file: "KAMALIN_NYDP.jpg" },
+        { id: 101, name: "MOHAMAD ZAWIR DANISH BIN MOHAMAD ZARIR", role: "Yang Dipertua", file: "zawir.jpg" },
+        { id: 102, name: "Nur Aisyah", role: "Naib Yang Dipertua I", file: "kamalin.jpg" },
         { id: 103, name: "Muhammad Daniel", role: "Naib Yang Dipertua II", file: "03-nydp2.png" },
         { id: 104, name: "Siti Sarah", role: "Setiausaha Kehormat", file: "04-setiausaha.png" },
         { id: 105, name: "Nur Farhana", role: "Naib Setiausaha", file: "05-naib-setiausaha.png" },
