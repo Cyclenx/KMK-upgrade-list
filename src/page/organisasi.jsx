@@ -226,8 +226,8 @@ const OrganizationPage = () => {
       folder: "02-penerbitan",
       peranan: "Menguruskan saluran media rasmi, reka bentuk visual kreatif, montaj dan penyampaian maklumat telus kepada warga kolej.",
       members: [
-        { id: 201, name: "Wan Irfan", role: "Ketua Biro", file: "01-ketua.png" },
-        { id: 202, name: "Nurul Iman", role: "Penolong Ketua Biro", file: "02-penolong.png" },
+        { id: 201, name: "Wan Irfan", role: "Exco", file: "01-ketua.png" },
+        { id: 202, name: "Nurul Iman", role: "Naib Exco", file: "02-penolong.png" },
         { id: 203, name: "Hafizuddin Ali", role: "Exco Grafik & Visual", file: "03-grafik.png" },
         { id: 204, name: "Ainul Mardhiah", role: "Exco Fotografi", file: "04-fotografi.png" },
         { id: 205, name: "Muhammad Zharif", role: "Exco Siaraya & Teknikal", file: "05-teknikal.png" },
@@ -241,8 +241,8 @@ const OrganizationPage = () => {
       folder: "03-sahsiah",
       peranan: "Memastikan keharmonian disiplin warga kolej, keselamatan fasiliti asrama, kelancaran trafik dan kawalan protokol acara.",
       members: [
-        { id: 301, name: "Muhammad Adam", role: "Ketua Biro", file: "01-ketua.png" },
-        { id: 302, name: "Nur Izzati", role: "Penolong Ketua Biro", file: "02-penolong.png" },
+        { id: 301, name: "Muhammad Adam", role: "Exco", file: "01-ketua.png" },
+        { id: 302, name: "Nur Izzati", role: "Naib Exco", file: "02-penolong.png" },
         { id: 303, name: "Haris Danial", role: "Exco Disiplin", file: "03-disiplin.png" },
         { id: 304, name: "Farah Diana", role: "Exco Kawalan Trafik", file: "04-trafik.png" },
         { id: 305, name: "Zulhilmi Azman", role: "Exco Keselamatan Blok", file: "05-keselamatan.png" },
@@ -256,8 +256,8 @@ const OrganizationPage = () => {
       folder: "04-kerohanian",
       peranan: "Mengimarahkan pusat ibadah, menganjurkan program pembinaan sahsiah rohani, usrah berkala dan sambutan kebesaran Islam.",
       members: [
-        { id: 401, name: "Luqman Hakim", role: "Ketua Biro", file: "01-ketua.png" },
-        { id: 402, name: "Fatin Nabilah", role: "Penolong Ketua Biro", file: "02-penolong.png" },
+        { id: 401, name: "Luqman Hakim", role: "Exco", file: "01-ketua.png" },
+        { id: 402, name: "Fatin Nabilah", role: "Naib Exco", file: "02-penolong.png" },
         { id: 403, name: "Ahmad Muhaimin", role: "Exco Pengimarahan Surau", file: "03-surau.png" },
         { id: 404, name: "Nur Syamimi", role: "Exco Usrah & Dakwah", file: "04-usrah.png" },
         { id: 405, name: "Izzat Firdaus", role: "Exco Modul Kerohanian", file: "05-modul.png" },
@@ -270,8 +270,8 @@ const OrganizationPage = () => {
       folder: "05-sukan",
       peranan: "Menyemarakkan gaya hidup cergas melalui aktiviti riadah, kejohanan sukan, persaingan e-sukan serta apresiasi kesenian kampus.",
       members: [
-        { id: 501, name: "Irfan Zikri", role: "Ketua Biro", file: "01-ketua.png" },
-        { id: 502, name: "Nur Safiyyah", role: "Penolong Ketua Biro", file: "02-penolong.png" },
+        { id: 501, name: "Irfan Zikri", role: "Exco", file: "01-ketua.png" },
+        { id: 502, name: "Nur Safiyyah", role: "Naib Exco", file: "02-penolong.png" },
         { id: 503, name: "Danish Haikal", role: "Exco Sukan Padang", file: "03-padang.png" },
         { id: 504, name: "Qistina Balqis", role: "Exco Seni & Kebudayaan", file: "04-kebudayaan.png" },
         { id: 505, name: "Hakim Naufal", role: "Exco E-Sukan", file: "05-esukan.png" },
@@ -285,8 +285,8 @@ const OrganizationPage = () => {
       folder: "06-akademik",
       peranan: "Memperkasa pencapaian ilmiah pelajar menerusi klinik akademik, bengkel peperiksaan, bimbingan rakan sebaya dan bank soalan.",
       members: [
-        { id: 601, name: "Muhammad Akmal", role: "Ketua Biro", file: "01-ketua.png" },
-        { id: 602, name: "Nurul Husna", role: "Penolong Ketua Biro", file: "02-penolong.png" },
+        { id: 601, name: "Muhammad Akmal", role: "Exco", file: "01-ketua.png" },
+        { id: 602, name: "Nurul Husna", role: "Naib Exco", file: "02-penolong.png" },
         { id: 603, name: "Hazim Fikri", role: "Exco Peer Tutoring", file: "03-tutoring.png" },
         { id: 604, name: "Nabila Huda", role: "Exco Bengkel & Seminar", file: "04-bengkel.png" },
         { id: 605, name: "Faris Imran", role: "Exco Bank Soalan", file: "05-banksoalan.png" },
@@ -300,8 +300,8 @@ const OrganizationPage = () => {
       folder: "07-perhubungan",
       peranan: "Membina jaringan strategik bersama institusi luar, agensi korporat, komuniti alumni serta menerajui program delegasi kepimpinan.",
       members: [
-        { id: 701, name: "Arif Iskandar", role: "Ketua Biro", file: "01-ketua.png" },
-        { id: 702, name: "Maisarah Zulkifli", role: "Penolong Ketua Biro", file: "02-penolong.png" },
+        { id: 701, name: "Arif Iskandar", role: "Exco", file: "01-ketua.png" },
+        { id: 702, name: "Maisarah Zulkifli", role: "Naib Exco", file: "02-penolong.png" },
         { id: 703, name: "Muadz Rahimi", role: "Exco Penajaan & Korporat", file: "03-penajaan.png" },
         { id: 704, name: "Syaza Nadhirah", role: "Exco Jaringan Alumni", file: "04-alumni.png" },
         { id: 705, name: "Naim Asyraf", role: "Exco Mobiliti Pelajar", file: "05-mobiliti.png" },
@@ -315,8 +315,13 @@ const OrganizationPage = () => {
       folder: "08-kebajikan",
       peranan: "Menjaga kesejahteraan hidup pelajar, menguruskan bantuan kecemasan, dana prihatin serta mengendalikan saluran aduan mahasiswa.",
       members: [
+<<<<<<< HEAD
         { id: 801, name: "Fatin", role: "Ketua Biro", file: "yttrcvf" },
         { id: 802, name: "Nur Salsabila", role: "Penolong Ketua Biro", file: "02-penolong.png" },
+=======
+        { id: 801, name: "Nik Azhar", role: "Exco", file: "01-ketua.png" },
+        { id: 802, name: "Nur Salsabila", role: "Naib Exco", file: "02-penolong.png" },
+>>>>>>> 6e99d6d98ea8af80df9b180e26de5ec54d7b40ee
         { id: 803, name: "Aiman Muqri", role: "Exco Bantuan Makanan", file: "03-makanan.png" },
         { id: 804, name: "Wardina Safiya", role: "Exco Fasiliti Asrama", file: "04-asrama.png" },
         { id: 805, name: "Rayyan Harith", role: "Exco Tabung Prihatin", file: "05-tabung.png" },
