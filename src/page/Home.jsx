@@ -50,7 +50,10 @@ function resolveGaleriImage(imageSource) {
     .replace(/^(?!\.\/)/, "./");
 
   try {
-    return localImageContext(normalized);
+    const asset = localImageContext(normalized);
+    return asset && typeof asset === "object" && "default" in asset
+      ? asset.default
+      : asset;
   } catch {
     return imageSource;
   }
@@ -292,25 +295,25 @@ export default function App() {
   };
 
   useEffect(() => {
-    const timer = setInterval(() => {
+    const timer = setTimeout(() => {
       nextSlide();
     }, 6000);
-    return () => clearInterval(timer);
-  }, [nextSlide]);
+    return () => clearTimeout(timer);
+  }, [currentSlide, nextSlide]);
 
   useEffect(() => {
-    const mgmtTimer = setInterval(() => {
+    const mgmtTimer = setTimeout(() => {
       nextMgmtSlide();
     }, 7000);
-    return () => clearInterval(mgmtTimer);
-  }, [nextMgmtSlide]);
+    return () => clearTimeout(mgmtTimer);
+  }, [currentMgmtSlide, nextMgmtSlide]);
 
   useEffect(() => {
-    const galeriTimer = setInterval(() => {
+    const galeriTimer = setTimeout(() => {
       nextGaleriSlide();
     }, 7500);
-    return () => clearInterval(galeriTimer);
-  }, [nextGaleriSlide]);
+    return () => clearTimeout(galeriTimer);
+  }, [currentGaleriSlide, nextGaleriSlide]);
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-gray-800 relative overflow-x-hidden">
@@ -522,18 +525,20 @@ export default function App() {
                 >
                   {slide.description}
                 </p>
-                <button
-                  style={{ animationDelay: "180ms" }}
-                  onClick={() => navigate(slide.link)}
-                  className={`group inline-flex items-center gap-2.5 text-white text-sm sm:text-base font-semibold hover:text-cyan-400 transition-colors duration-300 ease-editorial motion-reduce:transition-none ${
-                    index === currentSlide ? "animate-hero-in" : ""
-                  }`}
-                >
-                  <span className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-white group-hover:border-cyan-400 group-hover:bg-cyan-400/15 flex items-center justify-center group-hover:translate-x-1 transition-[transform,border-color,background-color] duration-300 ease-editorial motion-reduce:transition-none motion-reduce:group-hover:translate-x-0">
-                    <ArrowRight size={16} />
-                  </span>
-                  <span>{slide.linkText}</span>
-                </button>
+                {slide.link && (
+                  <button
+                    style={{ animationDelay: "180ms" }}
+                    onClick={() => navigate(slide.link)}
+                    className={`group inline-flex items-center gap-2.5 text-white text-sm sm:text-base font-semibold hover:text-cyan-400 transition-colors duration-300 ease-editorial motion-reduce:transition-none ${
+                      index === currentSlide ? "animate-hero-in" : ""
+                    }`}
+                  >
+                    <span className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-white group-hover:border-cyan-400 group-hover:bg-cyan-400/15 flex items-center justify-center group-hover:translate-x-1 transition-[transform,border-color,background-color] duration-300 ease-editorial motion-reduce:transition-none motion-reduce:group-hover:translate-x-0">
+                      <ArrowRight size={16} />
+                    </span>
+                    <span>{slide.linkText || "Ketahui lagi"}</span>
+                  </button>
+                )}
               </div>
             ))}
           </div>

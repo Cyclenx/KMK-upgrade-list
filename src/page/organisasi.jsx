@@ -315,13 +315,8 @@ const OrganizationPage = () => {
       folder: "08-kebajikan",
       peranan: "Menjaga kesejahteraan hidup pelajar, menguruskan bantuan kecemasan, dana prihatin serta mengendalikan saluran aduan mahasiswa.",
       members: [
-<<<<<<< HEAD
-        { id: 801, name: "Fatin", role: "Ketua Biro", file: "yttrcvf" },
-        { id: 802, name: "Nur Salsabila", role: "Penolong Ketua Biro", file: "02-penolong.png" },
-=======
         { id: 801, name: "Nik Azhar", role: "Exco", file: "01-ketua.png" },
         { id: 802, name: "Nur Salsabila", role: "Naib Exco", file: "02-penolong.png" },
->>>>>>> 6e99d6d98ea8af80df9b180e26de5ec54d7b40ee
         { id: 803, name: "Aiman Muqri", role: "Exco Bantuan Makanan", file: "03-makanan.png" },
         { id: 804, name: "Wardina Safiya", role: "Exco Fasiliti Asrama", file: "04-asrama.png" },
         { id: 805, name: "Rayyan Harith", role: "Exco Tabung Prihatin", file: "05-tabung.png" },
