@@ -24,6 +24,8 @@ import { useNavigate } from "react-router";
 import LogoJppKMK from "../logo kmk jpp.jpeg";
 import QrImage from "../image/sampah ii/qr.jpg";
 import Banner1 from "../image/sampah ii/dji 1.jpg";
+import Banner2 from "../image/sampah ii/dji 2.jpg";
+import Banner3 from "../image/sampah ii/dji 3.jpg";
 
 // Pembantu untuk menyokong laluan gambar tempatan (src/image/...) dan URL luar
 let localImageContext = null;
@@ -168,8 +170,8 @@ export default function App() {
         "Sebagai institusi pra-universiti premier, kami membina sahsiah holistik dan pencapaian akademik berimpak tinggi merentasi sempadan.",
       link: "/Cadangan",
       linkText: "Ketahui lagi",
-      image:
-        "https://lh3.googleusercontent.com/d/1U3gHUUdKcm-wngszK2cuI-V0_dd5kILt",
+      image: Banner2
+        
     },
     {
       id: 2,
@@ -179,8 +181,7 @@ export default function App() {
         "Mengintegrasikan pembelajaran pintar dan aplikasi digital interaktif bagi memperkasa daya saing warga kolej ke peringkat global.",
       link: "/aplikasi",
       linkText: "Terokai portal",
-      image:
-        "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1600&auto=format&fit=crop",
+      image: Banner3,
     },
     {
       id: 3,
