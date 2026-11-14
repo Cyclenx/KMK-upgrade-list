@@ -203,8 +203,8 @@ export default function App() {
       penerangan:
         "Memimpin kecemerlangan akademik, kepimpinan pelajar, dan pengurusan strategik Kolej Matrikulasi Kedah.",
       tel: "04-928 6100",
-      image:
-        "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=300&auto=format&fit=crop",
+      image: Banner1
+        
     },
     {
       id: 1,
@@ -215,8 +215,8 @@ export default function App() {
       penerangan:
         "Menguruskan hal ehwal pembangunan sahsiah, disiplin, kepimpinan pelajar, serta aktiviti persatuan kolej.",
       tel: "04-928 6102",
-      image:
-        "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=300&auto=format&fit=crop",
+      image: Banner1
+        
     },
     {
       id: 2,
@@ -227,8 +227,8 @@ export default function App() {
       penerangan:
         "Memantau kebajikan pelajar, pengurusan kediaman/kolej kediaman, kaunseling dan sukan pelajar.",
       tel: "04-928 6103",
-      image:
-        "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=300&auto=format&fit=crop",
+      image: Banner1
+        
     },
   ];
 
