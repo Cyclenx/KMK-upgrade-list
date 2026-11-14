@@ -20,7 +20,10 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router";
 
+// renew gambar dekat sni
 import LogoJppKMK from "../logo kmk jpp.jpeg";
+import QrImage from "../image/sampah ii/qr.jpg";
+import Banner1 from "../image/sampah ii/dji 1.jpg";
 
 // Pembantu untuk menyokong laluan gambar tempatan (src/image/...) dan URL luar
 let localImageContext = null;
@@ -144,11 +147,7 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  const logo1_KPM =
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Coat_of_arms_of_Malaysia.svg/200px-Coat_of_arms_of_Malaysia.svg.png";
-  const logo2_KMK = LogoJppKMK;
-  const logo3_Tambahan =
-    "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=100&auto=format&fit=crop&q=60";
+  const logoJppKMK = LogoJppKMK;
 
   const slides = [
     {
@@ -159,8 +158,7 @@ export default function App() {
         "Semangat kami terhadap pendidikan berkualiti mendorong kami untuk mencipta ekosistem pembelajaran dinamik demi masa depan anak bangsa.",
       link: "/organisasi",
       linkText: "Ketahui lagi",
-      image:
-        "https://lh3.googleusercontent.com/d/1OZI0j5jFNtxyeweC7tIcFy_lrNpvZsC_",
+      image: Banner1,
     },
     {
       id: 1,
@@ -368,24 +366,12 @@ export default function App() {
 
           {/* Bar Navigasi Utama */}
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
-            {/* Bekas 3 Logo */}
-            <div className="flex items-center gap-2 bg-white/95 backdrop-blur-md px-2.5 py-1.5 rounded-xl shadow-md border border-white/40 shrink-0">
+            {/* Logo JPP KMK */}
+            <div className="flex items-center bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-xl shadow-md shrink-0">
               <img
-                src={logo1_KPM}
-                alt="Logo 1"
-                className="h-6 sm:h-8 md:h-10 w-auto max-w-[36px] sm:max-w-[48px] object-contain shrink-0"
-              />
-              <div className="h-5 sm:h-6 w-[1px] bg-slate-300 shrink-0" />
-              <img
-                src={logo2_KMK}
-                alt="Logo 2"
-                className="h-6 sm:h-8 md:h-10 w-auto max-w-[36px] sm:max-w-[48px] object-contain shrink-0"
-              />
-              <div className="h-5 sm:h-6 w-[1px] bg-slate-300 shrink-0" />
-              <img
-                src={logo3_Tambahan}
-                alt="Logo 3"
-                className="h-6 sm:h-8 md:h-10 w-auto max-w-[36px] sm:max-w-[48px] object-contain shrink-0"
+                src={logoJppKMK}
+                alt="Logo JPP KMK"
+                className="h-16 sm:h-20 md:h-24 w-auto max-w-[160px] sm:max-w-[200px] object-contain shrink-0"
               />
             </div>
 
@@ -430,11 +416,10 @@ export default function App() {
 
           {/* Laci Menu Mobile dengan Animasi Slide & Fade */}
           <div
-            className={`md:hidden overflow-hidden transition-[max-height,opacity,transform] duration-300 ease-editorial bg-indigo-950/95 backdrop-blur-xl border-b border-white/10 shadow-2xl motion-reduce:transition-none ${
-              mobileMenuOpen
-                ? "max-h-80 opacity-100 translate-y-0"
-                : "max-h-0 opacity-0 -translate-y-3 pointer-events-none"
-            }`}
+            className={`md:hidden overflow-hidden transition-[max-height,opacity,transform] duration-300 ease-editorial bg-indigo-950/95 backdrop-blur-xl border-b border-white/10 shadow-2xl motion-reduce:transition-none ${mobileMenuOpen
+              ? "max-h-80 opacity-100 translate-y-0"
+              : "max-h-0 opacity-0 -translate-y-3 pointer-events-none"
+              }`}
           >
             <div className="px-6 py-5 text-white space-y-3">
               <button
@@ -484,18 +469,16 @@ export default function App() {
         {slides.map((slide, index) => (
           <div
             key={slide.id}
-            className={`absolute inset-0 transition-opacity duration-700 ease-editorial motion-reduce:transition-none ${
-              index === currentSlide
-                ? "opacity-100 z-10"
-                : "opacity-0 z-0 pointer-events-none"
-            }`}
+            className={`absolute inset-0 transition-opacity duration-700 ease-editorial motion-reduce:transition-none ${index === currentSlide
+              ? "opacity-100 z-10"
+              : "opacity-0 z-0 pointer-events-none"
+              }`}
           >
             <img
               src={slide.image}
               alt={slide.headline}
-              className={`w-full h-full object-cover transform transition-transform duration-700 ease-editorial motion-reduce:transition-none motion-reduce:scale-100 ${
-                index === currentSlide ? "scale-[1.03]" : "scale-100"
-              }`}
+              className={`w-full h-full object-cover transform transition-transform duration-700 ease-editorial motion-reduce:transition-none motion-reduce:scale-100 ${index === currentSlide ? "scale-[1.03]" : "scale-100"
+                }`}
             />
             <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-black/90 via-black/55 to-black/30 md:to-transparent" />
           </div>
@@ -511,17 +494,15 @@ export default function App() {
               >
                 <h1
                   style={{ animationDelay: "0ms" }}
-                  className={`text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-3 leading-tight drop-shadow-md ${
-                    index === currentSlide ? "animate-hero-in" : ""
-                  }`}
+                  className={`text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-3 leading-tight drop-shadow-md ${index === currentSlide ? "animate-hero-in" : ""
+                    }`}
                 >
                   {slide.headline}
                 </h1>
                 <p
                   style={{ animationDelay: "100ms" }}
-                  className={`text-xs sm:text-base text-gray-200 mb-6 line-clamp-3 leading-relaxed font-normal drop-shadow ${
-                    index === currentSlide ? "animate-hero-in" : ""
-                  }`}
+                  className={`text-xs sm:text-base text-gray-200 mb-6 line-clamp-3 leading-relaxed font-normal drop-shadow ${index === currentSlide ? "animate-hero-in" : ""
+                    }`}
                 >
                   {slide.description}
                 </p>
@@ -529,9 +510,8 @@ export default function App() {
                   <button
                     style={{ animationDelay: "180ms" }}
                     onClick={() => navigate(slide.link)}
-                    className={`group inline-flex items-center gap-2.5 text-white text-sm sm:text-base font-semibold hover:text-cyan-400 transition-colors duration-300 ease-editorial motion-reduce:transition-none ${
-                      index === currentSlide ? "animate-hero-in" : ""
-                    }`}
+                    className={`group inline-flex items-center gap-2.5 text-white text-sm sm:text-base font-semibold hover:text-cyan-400 transition-colors duration-300 ease-editorial motion-reduce:transition-none ${index === currentSlide ? "animate-hero-in" : ""
+                      }`}
                   >
                     <span className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-white group-hover:border-cyan-400 group-hover:bg-cyan-400/15 flex items-center justify-center group-hover:translate-x-1 transition-[transform,border-color,background-color] duration-300 ease-editorial motion-reduce:transition-none motion-reduce:group-hover:translate-x-0">
                       <ArrowRight size={16} />
@@ -554,11 +534,10 @@ export default function App() {
                   <button
                     key={slide.id}
                     onClick={() => setCurrentSlide(index)}
-                    className={`whitespace-nowrap pb-2 text-xs sm:text-sm font-semibold transition-colors duration-300 ease-editorial relative text-left shrink-0 motion-reduce:transition-none ${
-                      isActive
-                        ? "text-cyan-400"
-                        : "text-gray-400 hover:text-gray-200"
-                    }`}
+                    className={`whitespace-nowrap pb-2 text-xs sm:text-sm font-semibold transition-colors duration-300 ease-editorial relative text-left shrink-0 motion-reduce:transition-none ${isActive
+                      ? "text-cyan-400"
+                      : "text-gray-400 hover:text-gray-200"
+                      }`}
                   >
                     <span>{slide.tabTitle}</span>
                     {isActive && (
@@ -594,8 +573,8 @@ export default function App() {
           >
             <div className="relative group rounded-2xl overflow-hidden shadow-sm border border-slate-200/80 bg-white aspect-square w-full">
               <img
-                src="https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=1200&auto=format&fit=crop"
-                alt="Kampus Kolej Matrikulasi Kedah"
+                src={QrImage}
+                alt="QR Kolej Matrikulasi Kedah"
                 className="w-full h-full object-cover transition-transform duration-500 ease-editorial group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
@@ -624,11 +603,10 @@ export default function App() {
                         <button
                           key={idx}
                           onClick={() => setCurrentGaleriSlide(idx)}
-                          className={`h-2 rounded-full transition-[width,background-color] duration-300 ease-editorial motion-reduce:transition-none ${
-                            idx === currentGaleriSlide
-                              ? "w-5 bg-cyan-600"
-                              : "w-2 bg-gray-300 hover:bg-gray-400"
-                          }`}
+                          className={`h-2 rounded-full transition-[width,background-color] duration-300 ease-editorial motion-reduce:transition-none ${idx === currentGaleriSlide
+                            ? "w-5 bg-cyan-600"
+                            : "w-2 bg-gray-300 hover:bg-gray-400"
+                            }`}
                           aria-label={`Ke galeri ${idx + 1}`}
                         />
                       ))}
@@ -655,11 +633,10 @@ export default function App() {
                         tabIndex={isSelected ? 0 : -1}
                         aria-hidden={!isSelected}
                         aria-label={`Buka album ${item.tajuk} di Google Drive`}
-                        className={`group absolute inset-0 block transition-[transform,opacity] duration-500 ease-editorial motion-reduce:transition-none ${
-                          isSelected
-                            ? "opacity-100 z-10 translate-x-0 pointer-events-auto"
-                            : "opacity-0 z-0 pointer-events-none translate-x-4"
-                        }`}
+                        className={`group absolute inset-0 block transition-[transform,opacity] duration-500 ease-editorial motion-reduce:transition-none ${isSelected
+                          ? "opacity-100 z-10 translate-x-0 pointer-events-auto"
+                          : "opacity-0 z-0 pointer-events-none translate-x-4"
+                          }`}
                       >
                         <img
                           src={resolveGaleriImage(item.image)}
@@ -716,11 +693,10 @@ export default function App() {
                         <button
                           key={idx}
                           onClick={() => setCurrentMgmtSlide(idx)}
-                          className={`h-2 rounded-full transition-[width,background-color] duration-300 ease-editorial motion-reduce:transition-none ${
-                            idx === currentMgmtSlide
-                              ? "w-5 bg-cyan-600"
-                              : "w-2 bg-gray-300 hover:bg-gray-400"
-                          }`}
+                          className={`h-2 rounded-full transition-[width,background-color] duration-300 ease-editorial motion-reduce:transition-none ${idx === currentMgmtSlide
+                            ? "w-5 bg-cyan-600"
+                            : "w-2 bg-gray-300 hover:bg-gray-400"
+                            }`}
                           aria-label={`Ke profil ${idx + 1}`}
                         />
                       ))}
@@ -741,11 +717,10 @@ export default function App() {
                     return (
                       <div
                         key={person.id}
-                        className={`absolute inset-0 flex flex-col sm:flex-row transition-[transform,opacity] duration-500 ease-editorial motion-reduce:transition-none ${
-                          isSelected
-                            ? "opacity-100 z-10 translate-x-0"
-                            : "opacity-0 z-0 pointer-events-none translate-x-4"
-                        }`}
+                        className={`absolute inset-0 flex flex-col sm:flex-row transition-[transform,opacity] duration-500 ease-editorial motion-reduce:transition-none ${isSelected
+                          ? "opacity-100 z-10 translate-x-0"
+                          : "opacity-0 z-0 pointer-events-none translate-x-4"
+                          }`}
                       >
                         <div className="sm:w-2/5 bg-gradient-to-br from-indigo-900 to-[#1f1d6b] p-4 sm:p-6 flex flex-col items-center justify-center relative">
                           <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-full overflow-hidden border-4 border-white/90 shadow-lg bg-gray-200">
