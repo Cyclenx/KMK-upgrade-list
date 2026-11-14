@@ -8,6 +8,10 @@ const memberImages = import.meta.glob("../image/**/*.{png,jpg,jpeg,webp}", {
   import: "default",
 });
 
+const memberImagesLower = Object.fromEntries(
+  Object.entries(memberImages).map(([key, val]) => [key.toLowerCase(), val])
+);
+
 // Komponen Pembungkus Animasi Skrol Masuk
 function RevealOnScroll({ children, delay = 0, className = "" }) {
   const [isVisible, setIsVisible] = useState(false);
@@ -94,7 +98,9 @@ function BureauFocusSlider({ group, navigate }) {
             if (!isVisible) return null;
 
             const imagePath = `../image/${group.folder}/${member.file}`;
-            const imageSrc = memberImages[imagePath];
+            const imageSrc =
+              memberImages[imagePath] ||
+              memberImagesLower[imagePath.toLowerCase()];
             const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(
               member.name
             )}&background=1f1d6b&color=fff&size=256`;
@@ -300,12 +306,12 @@ const OrganizationPage = () => {
       folder: "PERHUBUNGAN LUAR",
       peranan: "Membina jaringan strategik bersama institusi luar, agensi korporat, komuniti alumni serta menerajui program delegasi kepimpinan.",
       members: [
-        { id: 701, name: "AMIRUL ASWADI BIN MOHD AZLAN", role: "Ketua Exco Perhubungan Luar", file: "Amirul.jpg" },
+        { id: 701, name: "AMIRUL ASWADI BIN MOHD AZLAN", role: "Ketua Exco Perhubungan Luar", file: "amirul.jpg" },
         { id: 702, name: "CHEAK ZI XUAN", role: "Penolong Ketua Exco Perhubungan Luar", file: "cheak.jpg" },
-        { id: 703, name: "NUR HUMAIRA BINTI MUHAMMAD SHIRMAN SHAH", role: "Biro Perhubungan Luar", file: "Humaira.jpg" },
+        { id: 703, name: "NUR HUMAIRA BINTI MUHAMMAD SHIRMAN SHAH", role: "Biro Perhubungan Luar", file: "humaira.jpg" },
         { id: 704, name: "SYED MIRZA SALIM ALKHARED BIN SYED JEFFRY", role: "Biro Perhubungan Luar", file: "mirza.jpg" },
         { id: 705, name: "NUR AZREENA BINTI MOHD NIZARUDDIN", role: "Biro Perhubungan Luar", file: "azreena.jpg" },
-        { id: 706, name: "NUR ADRIANA QISTINA BINTI MOHD SHAHRUL AFIZAN", role: "Biro Perhubungan Luar", file: "Adriana.jpg" },
+        { id: 706, name: "NUR ADRIANA QISTINA BINTI MOHD SHAHRUL AFIZAN", role: "Biro Perhubungan Luar", file: "adriana.jpg" },
         { id: 707, name: "AININ ZARRA BINTI KHALIT", role: "Biro Perhubungan Luar", file: "ainin.jpg" },
       ],
     },
