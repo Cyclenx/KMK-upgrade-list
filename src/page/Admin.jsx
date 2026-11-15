@@ -451,11 +451,18 @@ export default function Admin() {
     }
   };
 
-  const visibleTabs = ALL_TABS.filter((tab) => {
-    if (isDeveloper || role === "admin") return true;
-    if (tab.devOnly) return false;
-    return allowedModules.includes(tab.id);
-  });
+  const visibleTabs = role ? ALL_TABS : [];
+
+  const hasTabAccess = (tabId) => {
+    if (isDeveloper) return true;
+    if (role === "admin") {
+      return tabId !== "exco_users" && tabId !== "maintenance";
+    }
+    if (role === "exco") {
+      return allowedModules.includes(tabId);
+    }
+    return false;
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-gray-800 pb-20">
@@ -576,7 +583,7 @@ export default function Admin() {
               {visibleTabs.map((tab) => {
                 const Icon = tab.icon;
                 const isSelected = activeTab === tab.id;
-                const isLockedForUser = Boolean(tab.devOnly && !isDeveloper);
+                const isLockedForUser = !hasTabAccess(tab.id);
                 return (
                   <button
                     key={tab.id}
@@ -597,6 +604,22 @@ export default function Admin() {
               })}
             </div>
 
+            {/* SKRIN PUTIH BERKUNCI UNTUK TAB YANG TIADA AKSES */}
+            {!hasTabAccess(activeTab) ? (
+              <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-12 sm:p-16 text-center max-w-2xl mx-auto">
+                <div className="w-20 h-20 rounded-full bg-red-50 border border-red-100 text-red-500 flex items-center justify-center mx-auto mb-5">
+                  <Lock size={40} />
+                </div>
+                <h2 className="text-xl sm:text-2xl font-extrabold text-[#1f1d6b]">
+                  Akses Halaman Dikunci
+                </h2>
+                <p className="text-xs sm:text-sm text-gray-500 mt-2 leading-relaxed">
+                  Hanya Developer sahaja yang dapat mengakses dan mengubah
+                  tetapan halaman ini.
+                </p>
+              </div>
+            ) : (
+              <>
             {/* TAB 1: KAFE & TIMELINE */}
             {activeTab === "kafe_timeline" && (
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -905,23 +928,6 @@ export default function Admin() {
               </div>
             )}
 
-            {/* SKRIN PUTIH BERKUNCI UNTUK BUKAN DEVELOPER (TAB EXCO_USERS & MAINTENANCE) */}
-            {(activeTab === "exco_users" || activeTab === "maintenance") &&
-              !isDeveloper && (
-                <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-12 sm:p-16 text-center max-w-2xl mx-auto">
-                  <div className="w-20 h-20 rounded-full bg-red-50 border border-red-100 text-red-500 flex items-center justify-center mx-auto mb-5">
-                    <Lock size={40} />
-                  </div>
-                  <h2 className="text-xl sm:text-2xl font-extrabold text-[#1f1d6b]">
-                    Akses Halaman Dikunci
-                  </h2>
-                  <p className="text-xs sm:text-sm text-gray-500 mt-2 leading-relaxed">
-                    Hanya Developer sahaja yang dapat mengakses dan mengubah
-                    tetapan halaman ini.
-                  </p>
-                </div>
-              )}
-
             {/* TAB 3: PENGURUSAN E-MEL EXCO */}
             {activeTab === "exco_users" && isDeveloper && (
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -1177,6 +1183,8 @@ export default function Admin() {
                   </div>
                 )}
               </div>
+            )}
+              </>
             )}
           </>
         )}
