@@ -32,14 +32,14 @@ import {
   auth,
   googleProvider,
   db,
-  SUPER_ADMIN_EMAIL,
+  DEVELOPER_EMAILS,
 } from "../firebase";
 import { DEFAULT_KAFE_LIST } from "./LiveBoard";
 
 const ALL_TABS = [
   { id: "kafe_timeline", label: "Kafe & Timeline", icon: Coffee },
   { id: "galeri", label: "Galeri", icon: ImageIcon },
-  { id: "exco_users", label: "Pengurusan E-mel Exco", icon: Users, superOnly: true },
+  { id: "exco_users", label: "Pengurusan E-mel Exco", icon: Users, devOnly: true },
   { id: "maintenance", label: "Suis Penyelenggaraan", icon: Wrench },
   { id: "logs", label: "Log Aktiviti", icon: Activity },
 ];
@@ -87,6 +87,7 @@ export default function Admin() {
     email: "",
     nama: "",
     biro: "",
+    role: "exco",
     modules: ["kafe_timeline"],
   });
 
@@ -100,9 +101,9 @@ export default function Admin() {
   // State: Activity Logs
   const [activityLogs, setActivityLogs] = useState([]);
 
-  const isSuperAdmin =
+  const isDeveloper =
     Boolean(user?.email) &&
-    user.email.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
+    DEVELOPER_EMAILS.includes(user.email.toLowerCase());
 
   const showToast = (msg) => {
     setStatusBanner(msg);
@@ -146,26 +147,42 @@ export default function Admin() {
       return;
     }
 
-    if (user.email.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) {
-      setRole("super_admin");
+    const emailKey = user.email.toLowerCase();
+    if (DEVELOPER_EMAILS.includes(emailKey)) {
+      setRole("developer");
       setAllowedModules(ALL_TABS.map((t) => t.id));
       setPermLoading(false);
       return;
     }
 
     setPermLoading(true);
-    const emailKey = user.email.toLowerCase();
     const unsubUserDoc = onSnapshot(
       doc(db, "admin_users", emailKey),
       (docSnap) => {
         const data = docSnap.exists() ? docSnap.data() : null;
-        const mods = Array.isArray(data?.allowedModules)
-          ? data.allowedModules
-          : [];
-        setAllowedModules(mods);
-        setRole(mods.length > 0 ? "exco" : null);
-        if (mods.length > 0 && !mods.includes(activeTab)) {
-          setActiveTab(mods[0]);
+        const isActive = data?.status === "active";
+
+        if (isActive && data?.role === "admin") {
+          const adminModules = ALL_TABS.filter((t) => !t.devOnly).map(
+            (t) => t.id
+          );
+          setRole("admin");
+          setAllowedModules(adminModules);
+          if (!adminModules.includes(activeTab)) {
+            setActiveTab(adminModules[0]);
+          }
+        } else if (isActive) {
+          const mods = Array.isArray(data?.allowedModules)
+            ? data.allowedModules.filter((m) => m !== "exco_users")
+            : [];
+          setAllowedModules(mods);
+          setRole(mods.length > 0 ? "exco" : null);
+          if (mods.length > 0 && !mods.includes(activeTab)) {
+            setActiveTab(mods[0]);
+          }
+        } else {
+          setRole(null);
+          setAllowedModules([]);
         }
         setPermLoading(false);
       },
@@ -232,7 +249,7 @@ export default function Admin() {
     );
 
     const unsubExco =
-      role === "super_admin"
+      role === "developer"
         ? onSnapshot(
             collection(db, "admin_users"),
             (snap) => {
@@ -243,7 +260,9 @@ export default function Admin() {
         : () => {};
 
     const unsubLogs =
-      role === "super_admin" || allowedModules.includes("logs")
+      role === "developer" ||
+      role === "admin" ||
+      allowedModules.includes("logs")
         ? onSnapshot(
             collection(db, "audit_logs"),
             (snap) => {
@@ -368,30 +387,39 @@ export default function Admin() {
     }
   };
 
-  // Tambah / Kemas kini akses Exco
+  // Tambah / Kemas kini akses Exco atau Admin
   const handleSaveExcoUser = async (e) => {
     e.preventDefault();
     const emailClean = newExco.email.trim().toLowerCase();
     if (!emailClean) return;
+    const selectedRole = newExco.role === "admin" ? "admin" : "exco";
+    const modulesToSave =
+      selectedRole === "admin"
+        ? ALL_TABS.filter((t) => !t.devOnly).map((t) => t.id)
+        : newExco.modules;
+
     try {
       await setDoc(doc(db, "admin_users", emailClean), {
         email: emailClean,
         nama: newExco.nama.trim(),
         biro: newExco.biro.trim(),
-        allowedModules: newExco.modules,
+        role: selectedRole,
+        status: "active",
+        allowedModules: modulesToSave,
         updatedAtMs: Date.now(),
       });
       await recordLog(
-        "Kemas Kini Akses Exco",
-        `${emailClean} (${newExco.modules.join(", ")})`
+        "Kemas Kini Akses Pengguna",
+        `${emailClean} [${selectedRole}] (${modulesToSave.join(", ")})`
       );
       setNewExco({
         email: "",
         nama: "",
         biro: "",
+        role: "exco",
         modules: ["kafe_timeline"],
       });
-      showToast(`Akses untuk ${emailClean} telah disimpan.`);
+      showToast(`Akses ${selectedRole} untuk ${emailClean} telah disimpan.`);
     } catch (err) {
       showToast(`Gagal menyimpan akses exco: ${err.message}`);
     }
@@ -427,8 +455,9 @@ export default function Admin() {
   };
 
   const visibleTabs = ALL_TABS.filter((tab) => {
-    if (isSuperAdmin) return true;
-    if (tab.superOnly) return false;
+    if (isDeveloper) return true;
+    if (tab.devOnly) return false;
+    if (role === "admin") return true;
     return allowedModules.includes(tab.id);
   });
 
@@ -460,7 +489,13 @@ export default function Admin() {
           <div className="flex items-center gap-3">
             <span className="inline-flex items-center gap-1.5 bg-cyan-500/20 border border-cyan-400/40 text-cyan-200 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
               <ShieldCheck size={14} />
-              <span>{isSuperAdmin ? "Super Admin" : "Panel Admin JPP"}</span>
+              <span>
+                {isDeveloper
+                  ? "Developer"
+                  : role === "admin"
+                  ? "Admin"
+                  : "Panel Admin JPP"}
+              </span>
             </span>
 
             {user && (
@@ -521,9 +556,9 @@ export default function Admin() {
               Tiada Kebenaran Modul
             </h2>
             <p className="text-xs sm:text-sm text-gray-600 mt-2 leading-relaxed">
-              Akaun <strong>{user.email}</strong> belum diberikan akses dalam
-              koleksi <code>admin_users</code>. Sila hubungi Super Admin (
-              <code>{SUPER_ADMIN_EMAIL}</code>) untuk mendapatkan kebenaran.
+              Akaun <strong>{user.email}</strong> belum diberikan akses aktif
+              dalam koleksi <code>admin_users</code>. Sila hubungi Developer
+              untuk mendapatkan kebenaran.
             </p>
           </div>
         ) : (
@@ -870,8 +905,8 @@ export default function Admin() {
               </div>
             )}
 
-            {/* TAB 3: PENGURUSAN E-MEL EXCO (SUPER ADMIN SAHAJA) */}
-            {activeTab === "exco_users" && isSuperAdmin && (
+            {/* TAB 3: PENGURUSAN E-MEL EXCO (DEVELOPER SAHAJA) */}
+            {activeTab === "exco_users" && isDeveloper && (
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <form
                   onSubmit={handleSaveExcoUser}
@@ -910,34 +945,56 @@ export default function Admin() {
                   />
 
                   <div className="pt-1">
-                    <p className="text-xs font-bold text-gray-700 mb-2">
-                      Modul yang Dibenarkan:
-                    </p>
-                    <div className="space-y-2">
-                      {ASSIGNABLE_MODULES.map((mod) => {
-                        const checked = newExco.modules.includes(mod.id);
-                        return (
-                          <label
-                            key={mod.id}
-                            className="flex items-center gap-2 text-xs text-gray-700 cursor-pointer"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={checked}
-                              onChange={(e) => {
-                                const next = e.target.checked
-                                  ? [...newExco.modules, mod.id]
-                                  : newExco.modules.filter((m) => m !== mod.id);
-                                setNewExco({ ...newExco, modules: next });
-                              }}
-                              className="rounded text-[#1f1d6b]"
-                            />
-                            <span>{mod.label}</span>
-                          </label>
-                        );
-                      })}
-                    </div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">
+                      Peranan (Role):
+                    </label>
+                    <select
+                      value={newExco.role}
+                      onChange={(e) =>
+                        setNewExco({ ...newExco, role: e.target.value })
+                      }
+                      className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs sm:text-sm bg-white"
+                    >
+                      <option value="exco">
+                        Exco (Modul Terpilih Sahaja)
+                      </option>
+                      <option value="admin">
+                        Admin (Semua Tab Kecuali Pengurusan E-mel)
+                      </option>
+                    </select>
                   </div>
+
+                  {newExco.role !== "admin" && (
+                    <div className="pt-1">
+                      <p className="text-xs font-bold text-gray-700 mb-2">
+                        Modul yang Dibenarkan:
+                      </p>
+                      <div className="space-y-2">
+                        {ASSIGNABLE_MODULES.map((mod) => {
+                          const checked = newExco.modules.includes(mod.id);
+                          return (
+                            <label
+                              key={mod.id}
+                              className="flex items-center gap-2 text-xs text-gray-700 cursor-pointer"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={(e) => {
+                                  const next = e.target.checked
+                                    ? [...newExco.modules, mod.id]
+                                    : newExco.modules.filter((m) => m !== mod.id);
+                                  setNewExco({ ...newExco, modules: next });
+                                }}
+                                className="rounded text-[#1f1d6b]"
+                              />
+                              <span>{mod.label}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
 
                   <button
                     type="submit"

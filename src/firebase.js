@@ -28,7 +28,10 @@ if (typeof window !== "undefined") {
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 export const db = getFirestore(app);
-export const SUPER_ADMIN_EMAIL = "halimhafizhan1059@gmail.com";
+export const DEVELOPER_EMAILS = [
+  "halimhafizhan1059@gmail.com",
+  "ffafif719@gmail.com",
+];
 
 export function trackPageView(pathname) {
   if (typeof window === "undefined") return;

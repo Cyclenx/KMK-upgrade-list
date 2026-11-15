@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Wrench, Clock, ShieldCheck } from "lucide-react";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, onSnapshot } from "firebase/firestore";
-import { auth, db, SUPER_ADMIN_EMAIL } from "../firebase";
+import { auth, db, DEVELOPER_EMAILS } from "../firebase";
 
 export default function MaintenanceGuard({ children }) {
   const [maintenance, setMaintenance] = useState({
@@ -33,7 +33,7 @@ export default function MaintenanceGuard({ children }) {
       }
 
       const emailKey = currentUser.email.toLowerCase();
-      if (emailKey === SUPER_ADMIN_EMAIL.toLowerCase()) {
+      if (DEVELOPER_EMAILS.includes(emailKey)) {
         setIsAdminUser(true);
         return;
       }
@@ -41,8 +41,13 @@ export default function MaintenanceGuard({ children }) {
       unsubAdminDoc = onSnapshot(
         doc(db, "admin_users", emailKey),
         (docSnap) => {
-          const mods = docSnap.exists() ? docSnap.data()?.allowedModules : [];
-          setIsAdminUser(Array.isArray(mods) && mods.length > 0);
+          const data = docSnap.exists() ? docSnap.data() : null;
+          const isActive = data?.status === "active";
+          const isRoleAdmin = data?.role === "admin";
+          const hasModules =
+            Array.isArray(data?.allowedModules) &&
+            data.allowedModules.length > 0;
+          setIsAdminUser(Boolean(isActive && (isRoleAdmin || hasModules)));
         },
         (error) => {
           console.error("Firestore listener error:", error);
