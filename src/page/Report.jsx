@@ -32,12 +32,8 @@ export default function Cadangan() {
   const [isLoading, setIsLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState(null); // { type: 'success' | 'error', text: '' }
 
-  // URL Logo Penjuru Atas Kiri
-  const logo1_KPM =
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Coat_of_arms_of_Malaysia.svg/200px-Coat_of_arms_of_Malaysia.svg.png";
-  const logo2_KMK = LogoJppKMK;
-  const logo3_Tambahan =
-    "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=100&auto=format&fit=crop&q=60";
+  // Logo Penjuru Atas Kiri
+  const logoJppKMK = LogoJppKMK;
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -117,27 +113,13 @@ export default function Cadangan() {
 
         {/* Bar Navigasi Utama */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center gap-4">
-          {/* Tiga Logo KMK & Kementerian */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 bg-white/95 backdrop-blur-md px-2.5 py-1.5 rounded-xl shadow-md border border-white/40">
-              <img
-                src={logo1_KPM}
-                alt="Logo KPM"
-                className="h-8 sm:h-10 w-auto object-contain"
-              />
-              <div className="h-6 w-[1px] bg-slate-300" />
-              <img
-                src={logo2_KMK}
-                alt="Logo KMK"
-                className="h-8 sm:h-10 w-auto object-contain"
-              />
-              <div className="h-6 w-[1px] bg-slate-300" />
-              <img
-                src={logo3_Tambahan}
-                alt="Logo 3"
-                className="h-8 sm:h-10 w-auto object-contain"
-              />
-            </div>
+          {/* Logo JPP KMK */}
+          <div className="flex items-center bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-xl shadow-md shrink-0">
+            <img
+              src={logoJppKMK}
+              alt="Logo JPP KMK"
+              className="h-16 sm:h-20 md:h-24 w-auto max-w-[160px] sm:max-w-[200px] object-contain shrink-0"
+            />
           </div>
 
           {/* Navigasi */}
