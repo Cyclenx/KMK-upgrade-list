@@ -40,14 +40,13 @@ const ALL_TABS = [
   { id: "kafe_timeline", label: "Kafe & Timeline", icon: Coffee },
   { id: "galeri", label: "Galeri", icon: ImageIcon },
   { id: "exco_users", label: "Pengurusan E-mel Exco", icon: Users, devOnly: true },
-  { id: "maintenance", label: "Suis Penyelenggaraan", icon: Wrench },
+  { id: "maintenance", label: "Suis Penyelenggaraan", icon: Wrench, devOnly: true },
   { id: "logs", label: "Log Aktiviti", icon: Activity },
 ];
 
 const ASSIGNABLE_MODULES = [
   { id: "kafe_timeline", label: "Kafe & Timeline" },
   { id: "galeri", label: "Galeri KMK" },
-  { id: "maintenance", label: "Suis Penyelenggaraan" },
   { id: "logs", label: "Log Aktiviti" },
 ];
 
@@ -455,9 +454,8 @@ export default function Admin() {
   };
 
   const visibleTabs = ALL_TABS.filter((tab) => {
-    if (isDeveloper) return true;
+    if (isDeveloper || role === "admin") return true;
     if (tab.devOnly) return false;
-    if (role === "admin") return true;
     return allowedModules.includes(tab.id);
   });
 
@@ -493,8 +491,8 @@ export default function Admin() {
                 {isDeveloper
                   ? "Developer"
                   : role === "admin"
-                  ? "Admin"
-                  : "Panel Admin JPP"}
+                  ? "Admin JPP"
+                  : "Exco Modul"}
               </span>
             </span>
 
@@ -580,6 +578,7 @@ export default function Admin() {
               {visibleTabs.map((tab) => {
                 const Icon = tab.icon;
                 const isSelected = activeTab === tab.id;
+                const isLockedForUser = Boolean(tab.devOnly && !isDeveloper);
                 return (
                   <button
                     key={tab.id}
@@ -592,6 +591,9 @@ export default function Admin() {
                   >
                     <Icon size={16} />
                     <span>{tab.label}</span>
+                    {isLockedForUser && (
+                      <Lock size={13} className="opacity-80 shrink-0" />
+                    )}
                   </button>
                 );
               })}
@@ -905,6 +907,48 @@ export default function Admin() {
               </div>
             )}
 
+            {/* PAPARAN TERKUNCI UNTUK BUKAN DEVELOPER (TAB EXCO_USERS & MAINTENANCE) */}
+            {(activeTab === "exco_users" || activeTab === "maintenance") &&
+              !isDeveloper && (
+                <div className="max-w-xl mx-auto my-8 bg-white rounded-3xl border border-amber-200 shadow-lg p-8 text-center space-y-4">
+                  <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center mx-auto">
+                    <Lock size={30} />
+                  </div>
+
+                  <h2 className="text-xl font-extrabold text-[#1f1d6b]">
+                    Akses Terhad — Khas Developer Sahaja
+                  </h2>
+
+                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                    Tetapan Pengurusan E-mel &amp; Suis Penyelenggaraan Sistem
+                    dikunci di peringkat pelayan dan hanya boleh diakses atau
+                    diubah oleh pihak Developer portal.
+                  </p>
+
+                  <div className="pt-4 border-t border-slate-100">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-2">
+                      Status Mod Penyelenggaraan Semasa (Bacaan Sahaja)
+                    </p>
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-xs font-bold bg-slate-50 border-slate-200">
+                      <span
+                        className={`h-2.5 w-2.5 rounded-full ${
+                          maintenance.enabled ? "bg-amber-500" : "bg-emerald-500"
+                        }`}
+                      />
+                      <span
+                        className={
+                          maintenance.enabled
+                            ? "text-amber-700"
+                            : "text-emerald-700"
+                        }
+                      >
+                        {maintenance.enabled ? "Aktif" : "Tidak Aktif"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
             {/* TAB 3: PENGURUSAN E-MEL EXCO (DEVELOPER SAHAJA) */}
             {activeTab === "exco_users" && isDeveloper && (
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -1052,8 +1096,8 @@ export default function Admin() {
               </div>
             )}
 
-            {/* TAB 4: SUIS PENYELENGGARAAN */}
-            {activeTab === "maintenance" && (
+            {/* TAB 4: SUIS PENYELENGGARAAN (DEVELOPER SAHAJA) */}
+            {activeTab === "maintenance" && isDeveloper && (
               <form
                 onSubmit={handleSaveMaintenance}
                 className="max-w-xl bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4"
