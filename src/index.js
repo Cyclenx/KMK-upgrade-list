@@ -7,6 +7,7 @@ import Home from "./page/Home.jsx";
 import MemberProfile from "./page/MemberProfile.jsx";
 import LiveBoard from "./page/LiveBoard.jsx";
 import Admin from "./page/Admin.jsx";
+import MaintenanceGuard from "./components/MaintenanceGuard.jsx";
 import { trackPageView } from "./firebase";
 import reportWebVitals from "./reportWebVitals";
 import { createBrowserRouter } from "react-router";
@@ -15,23 +16,43 @@ import { RouterProvider } from "react-router/dom";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Home />,
+    element: (
+      <MaintenanceGuard>
+        <Home />
+      </MaintenanceGuard>
+    ),
   },
   {
     path: "/organisasi",
-    element: <Organisasi />,
+    element: (
+      <MaintenanceGuard>
+        <Organisasi />
+      </MaintenanceGuard>
+    ),
   },
   {
     path: "/Cadangan",
-    element: <Report />,
+    element: (
+      <MaintenanceGuard>
+        <Report />
+      </MaintenanceGuard>
+    ),
   },
   {
     path: "/member/:id",
-    element: <MemberProfile />,
+    element: (
+      <MaintenanceGuard>
+        <MemberProfile />
+      </MaintenanceGuard>
+    ),
   },
   {
     path: "/live-board",
-    element: <LiveBoard />,
+    element: (
+      <MaintenanceGuard>
+        <LiveBoard />
+      </MaintenanceGuard>
+    ),
   },
   {
     path: "/admin",
