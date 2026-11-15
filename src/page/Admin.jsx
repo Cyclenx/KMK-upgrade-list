@@ -54,6 +54,7 @@ const ASSIGNABLE_MODULES = [
 export default function Admin() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [role, setRole] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [allowedModules, setAllowedModules] = useState([]);
   const [permLoading, setPermLoading] = useState(false);
@@ -111,7 +112,7 @@ export default function Admin() {
   const recordLog = async (action, details) => {
     if (!user?.email) return;
     try {
-      await addDoc(collection(db, "activity_logs"), {
+      await addDoc(collection(db, "audit_logs"), {
         email: user.email,
         name: user.displayName || user.email,
         action,
@@ -128,66 +129,77 @@ export default function Admin() {
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      if (!currentUser) {
+        setRole(null);
+        setAllowedModules([]);
+      }
       setAuthLoading(false);
     });
     return () => unsub();
   }, []);
 
-  // Semak kebenaran exco dalam koleksi `admin_users`
+  // Semak peranan & kebenaran exco dalam koleksi `admin_users`
   useEffect(() => {
-    if (!user?.email) {
+    if (authLoading || !user?.email) {
+      setRole(null);
       setAllowedModules([]);
       return;
     }
 
     if (user.email.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) {
+      setRole("super_admin");
       setAllowedModules(ALL_TABS.map((t) => t.id));
+      setPermLoading(false);
       return;
     }
 
     setPermLoading(true);
     const emailKey = user.email.toLowerCase();
-    const unsubUsers = onSnapshot(
-      collection(db, "admin_users"),
-      (snapshot) => {
-        const matched = snapshot.docs
-          .map((d) => ({ id: d.id, ...d.data() }))
-          .find(
-            (u) =>
-              u.id.toLowerCase() === emailKey ||
-              (u.email && u.email.toLowerCase() === emailKey)
-          );
-
-        const mods = Array.isArray(matched?.allowedModules)
-          ? matched.allowedModules
+    const unsubUserDoc = onSnapshot(
+      doc(db, "admin_users", emailKey),
+      (docSnap) => {
+        const data = docSnap.exists() ? docSnap.data() : null;
+        const mods = Array.isArray(data?.allowedModules)
+          ? data.allowedModules
           : [];
         setAllowedModules(mods);
+        setRole(mods.length > 0 ? "exco" : null);
         if (mods.length > 0 && !mods.includes(activeTab)) {
           setActiveTab(mods[0]);
         }
         setPermLoading(false);
       },
-      () => {
+      (error) => {
+        console.error("Firestore listener error:", error);
+        setRole(null);
+        setAllowedModules([]);
         setPermLoading(false);
       }
     );
 
-    return () => unsubUsers();
-  }, [user, activeTab]);
+    return () => unsubUserDoc();
+  }, [authLoading, user, activeTab]);
 
-  // Langgan data Firestore apabila pengguna mempunyai akses
+  // Langgan data Firestore hanya selepas user & role disahkan
   useEffect(() => {
-    if (!user) return;
+    if (!user || !role) return;
 
-    const unsubKafe = onSnapshot(collection(db, "liveboard_kafe"), (snap) => {
-      if (!snap.empty) {
-        const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-        docs.sort((a, b) => (a.susunan || 99) - (b.susunan || 99));
-        setKafeList(docs);
-      } else {
-        setKafeList(DEFAULT_KAFE_LIST);
-      }
-    });
+    const handleListenerError = (error) =>
+      console.error("Firestore listener error:", error);
+
+    const unsubKafe = onSnapshot(
+      collection(db, "liveboard_kafe"),
+      (snap) => {
+        if (!snap.empty) {
+          const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+          docs.sort((a, b) => (a.susunan || 99) - (b.susunan || 99));
+          setKafeList(docs);
+        } else {
+          setKafeList(DEFAULT_KAFE_LIST);
+        }
+      },
+      handleListenerError
+    );
 
     const unsubTimeline = onSnapshot(
       collection(db, "liveboard_timeline"),
@@ -195,30 +207,53 @@ export default function Admin() {
         const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
         docs.sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
         setTimelineList(docs);
-      }
+      },
+      handleListenerError
     );
 
-    const unsubGaleri = onSnapshot(collection(db, "galeri_kmk"), (snap) => {
-      const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-      docs.sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
-      setGaleriItems(docs);
-    });
+    const unsubGaleri = onSnapshot(
+      collection(db, "galeri_events"),
+      (snap) => {
+        const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        docs.sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
+        setGaleriItems(docs);
+      },
+      handleListenerError
+    );
 
-    const unsubExco = onSnapshot(collection(db, "admin_users"), (snap) => {
-      setExcoUsers(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
-    });
+    const unsubMaint = onSnapshot(
+      doc(db, "system_settings", "maintenance"),
+      (snap) => {
+        if (snap.exists()) {
+          setMaintenance((prev) => ({ ...prev, ...snap.data() }));
+        }
+      },
+      handleListenerError
+    );
 
-    const unsubMaint = onSnapshot(doc(db, "settings", "maintenance"), (snap) => {
-      if (snap.exists()) {
-        setMaintenance((prev) => ({ ...prev, ...snap.data() }));
-      }
-    });
+    const unsubExco =
+      role === "super_admin"
+        ? onSnapshot(
+            collection(db, "admin_users"),
+            (snap) => {
+              setExcoUsers(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+            },
+            handleListenerError
+          )
+        : () => {};
 
-    const unsubLogs = onSnapshot(collection(db, "activity_logs"), (snap) => {
-      const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-      docs.sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
-      setActivityLogs(docs.slice(0, 50));
-    });
+    const unsubLogs =
+      role === "super_admin" || allowedModules.includes("logs")
+        ? onSnapshot(
+            collection(db, "audit_logs"),
+            (snap) => {
+              const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+              docs.sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
+              setActivityLogs(docs.slice(0, 50));
+            },
+            handleListenerError
+          )
+        : () => {};
 
     return () => {
       unsubKafe();
@@ -228,7 +263,7 @@ export default function Admin() {
       unsubMaint();
       unsubLogs();
     };
-  }, [user]);
+  }, [user, role, allowedModules]);
 
   const handleGoogleLogin = async () => {
     try {
@@ -305,7 +340,7 @@ export default function Admin() {
     e.preventDefault();
     if (!newGaleri.tajuk.trim()) return;
     try {
-      await addDoc(collection(db, "galeri_kmk"), {
+      await addDoc(collection(db, "galeri_events"), {
         ...newGaleri,
         createdAtMs: Date.now(),
       });
@@ -325,7 +360,7 @@ export default function Admin() {
 
   const handleDeleteGaleri = async (id, tajuk) => {
     try {
-      await deleteDoc(doc(db, "galeri_kmk", id));
+      await deleteDoc(doc(db, "galeri_events", id));
       await recordLog("Padam Galeri KMK", tajuk);
       showToast("Slide galeri dipadam.");
     } catch (err) {
@@ -376,7 +411,7 @@ export default function Admin() {
   const handleSaveMaintenance = async (e) => {
     e.preventDefault();
     try {
-      await setDoc(doc(db, "settings", "maintenance"), {
+      await setDoc(doc(db, "system_settings", "maintenance"), {
         ...maintenance,
         updatedBy: user.email,
         updatedAtMs: Date.now(),

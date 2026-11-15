@@ -94,7 +94,8 @@ export default function LiveBoard() {
           setKafeItems(DEFAULT_KAFE_LIST);
         }
       },
-      () => {
+      (error) => {
+        console.error("Firestore listener error:", error);
         setIsRealtimeConnected(false);
       }
     );
@@ -117,7 +118,8 @@ export default function LiveBoard() {
           setTimelineItems(DEFAULT_TIMELINE_LIST);
         }
       },
-      () => {
+      (error) => {
+        console.error("Firestore listener error:", error);
         setIsRealtimeConnected(false);
       }
     );
