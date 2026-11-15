@@ -162,22 +162,20 @@ export default function Admin() {
         const isActive = data?.status === "active";
 
         if (isActive && data?.role === "admin") {
-          const adminModules = ALL_TABS.filter((t) => !t.devOnly).map(
-            (t) => t.id
-          );
+          const allTabIds = ALL_TABS.map((t) => t.id);
           setRole("admin");
-          setAllowedModules(adminModules);
-          if (!adminModules.includes(activeTab)) {
-            setActiveTab(adminModules[0]);
-          }
+          setAllowedModules(allTabIds);
+          setActiveTab((prev) =>
+            allTabIds.includes(prev) ? prev : allTabIds[0]
+          );
         } else if (isActive) {
           const mods = Array.isArray(data?.allowedModules)
             ? data.allowedModules.filter((m) => m !== "exco_users")
             : [];
           setAllowedModules(mods);
           setRole(mods.length > 0 ? "exco" : null);
-          if (mods.length > 0 && !mods.includes(activeTab)) {
-            setActiveTab(mods[0]);
+          if (mods.length > 0) {
+            setActiveTab((prev) => (mods.includes(prev) ? prev : mods[0]));
           }
         } else {
           setRole(null);
@@ -194,7 +192,7 @@ export default function Admin() {
     );
 
     return () => unsubUserDoc();
-  }, [authLoading, user, activeTab]);
+  }, [authLoading, user]);
 
   // Langgan data Firestore hanya selepas user & role disahkan
   useEffect(() => {
@@ -907,26 +905,26 @@ export default function Admin() {
               </div>
             )}
 
-            {/* TAB 3: PENGURUSAN E-MEL EXCO */}
-            {activeTab === "exco_users" && (
-              <div className="space-y-4">
-                {!isDeveloper && (
-                  <div className="rounded-2xl bg-amber-50 border border-amber-200 px-4 py-3 text-xs sm:text-sm text-amber-900 font-semibold flex items-center gap-2.5">
-                    <Lock size={16} className="text-amber-600 shrink-0" />
-                    <span>
-                      Mod Paparan Sahaja (Dikunci) — Tetapan ini hanya boleh
-                      diubah oleh pihak Developer portal.
-                    </span>
+            {/* SKRIN PUTIH BERKUNCI UNTUK BUKAN DEVELOPER (TAB EXCO_USERS & MAINTENANCE) */}
+            {(activeTab === "exco_users" || activeTab === "maintenance") &&
+              !isDeveloper && (
+                <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-12 sm:p-16 text-center max-w-2xl mx-auto">
+                  <div className="w-20 h-20 rounded-full bg-red-50 border border-red-100 text-red-500 flex items-center justify-center mx-auto mb-5">
+                    <Lock size={40} />
                   </div>
-                )}
+                  <h2 className="text-xl sm:text-2xl font-extrabold text-[#1f1d6b]">
+                    Akses Halaman Dikunci
+                  </h2>
+                  <p className="text-xs sm:text-sm text-gray-500 mt-2 leading-relaxed">
+                    Hanya Developer sahaja yang dapat mengakses dan mengubah
+                    tetapan halaman ini.
+                  </p>
+                </div>
+              )}
 
-                <fieldset
-                  disabled={!isDeveloper}
-                  className={
-                    !isDeveloper ? "opacity-75 select-none pointer-events-none" : ""
-                  }
-                >
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* TAB 3: PENGURUSAN E-MEL EXCO */}
+            {activeTab === "exco_users" && isDeveloper && (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <form
                   onSubmit={handleSaveExcoUser}
                   className="lg:col-span-5 bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-3 h-fit"
@@ -1068,34 +1066,15 @@ export default function Admin() {
                     ))
                   )}
                 </div>
-                  </div>
-                </fieldset>
               </div>
             )}
 
             {/* TAB 4: SUIS PENYELENGGARAAN */}
-            {activeTab === "maintenance" && (
-              <div className="space-y-4 max-w-xl">
-                {!isDeveloper && (
-                  <div className="rounded-2xl bg-amber-50 border border-amber-200 px-4 py-3 text-xs sm:text-sm text-amber-900 font-semibold flex items-center gap-2.5">
-                    <Lock size={16} className="text-amber-600 shrink-0" />
-                    <span>
-                      Mod Paparan Sahaja (Dikunci) — Tetapan ini hanya boleh
-                      diubah oleh pihak Developer portal.
-                    </span>
-                  </div>
-                )}
-
-                <fieldset
-                  disabled={!isDeveloper}
-                  className={
-                    !isDeveloper ? "opacity-75 select-none pointer-events-none" : ""
-                  }
-                >
-                  <form
-                    onSubmit={handleSaveMaintenance}
-                    className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4"
-                  >
+            {activeTab === "maintenance" && isDeveloper && (
+              <form
+                onSubmit={handleSaveMaintenance}
+                className="max-w-xl bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4"
+              >
                 <h2 className="text-lg font-bold text-[#1f1d6b] border-b-2 border-cyan-500 pb-2">
                   Suis Penyelenggaraan Portal
                 </h2>
@@ -1165,8 +1144,6 @@ export default function Admin() {
                   <span>Simpan Tetapan</span>
                 </button>
               </form>
-                </fieldset>
-              </div>
             )}
 
             {/* TAB 5: LOG AKTIVITI */}
