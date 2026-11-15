@@ -135,7 +135,7 @@ function RevealOnScroll({
       style={{
         transitionDelay: prefersReducedMotion ? "0ms" : `${delay}ms`,
       }}
-      className={`transform transition-[transform,opacity] duration-[650ms] ease-editorial will-change-transform motion-reduce:transition-none ${getDirectionClasses()} ${className}`}
+      className={`transform transition-[transform,opacity] overflow-hidden duration-[650ms] ease-editorial will-change-transform motion-reduce:transition-none ${getDirectionClasses()} ${className}`}
     >
       {children}
     </div>
@@ -171,7 +171,7 @@ export default function App() {
       link: "/Cadangan",
       linkText: "Ketahui lagi",
       image: Banner2
-        
+
     },
     {
       id: 2,
@@ -204,7 +204,7 @@ export default function App() {
         "Memimpin kecemerlangan akademik, kepimpinan pelajar, dan pengurusan strategik Kolej Matrikulasi Kedah.",
       tel: "04-928 6100",
       image: Banner1
-        
+
     },
     {
       id: 1,
@@ -216,7 +216,7 @@ export default function App() {
         "Menguruskan hal ehwal pembangunan sahsiah, disiplin, kepimpinan pelajar, serta aktiviti persatuan kolej.",
       tel: "04-928 6102",
       image: Banner1
-        
+
     },
     {
       id: 2,
@@ -228,7 +228,7 @@ export default function App() {
         "Memantau kebajikan pelajar, pengurusan kediaman/kolej kediaman, kaunseling dan sukan pelajar.",
       tel: "04-928 6103",
       image: Banner1
-        
+
     },
   ];
 
@@ -401,6 +401,17 @@ export default function App() {
                 <Users size={16} />
                 <span>Organisasi</span>
               </button>
+
+              <button
+                onClick={() => navigate("/live-board")}
+                className="px-3 py-2 hover:text-cyan-300 border-b-2 border-transparent hover:border-cyan-400 transition-colors duration-300 ease-editorial flex items-center gap-2 text-gray-200 motion-reduce:transition-none"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+                </span>
+                <span>Live Board</span>
+              </button>
             </nav>
 
             {/* Butang Hamburger Mobile */}
@@ -454,6 +465,20 @@ export default function App() {
               >
                 <Users size={18} />
                 <span>Organisasi Kolej</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  navigate("/live-board");
+                  setMobileMenuOpen(false);
+                }}
+                className="w-full flex items-center gap-3 py-2.5 px-3 rounded-lg text-gray-200 hover:bg-white/5 hover:text-white font-medium text-sm transition-[transform,background-color,color] duration-200 active:scale-[0.98] motion-reduce:transition-none"
+              >
+                <span className="relative flex h-2.5 w-2.5 ml-0.5 mr-0.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
+                </span>
+                <span>Live Board</span>
               </button>
 
               <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs text-gray-400">
@@ -814,6 +839,17 @@ export default function App() {
                   Tel: 04-928 6100 | Faks: 04-928 6111
                 </p>
               </address>
+              <button
+                onClick={() => navigate("/live-board")}
+                className="mt-4 inline-flex items-center gap-2 bg-cyan-500/20 hover:bg-cyan-500 text-cyan-300 hover:text-white border border-cyan-400/40 px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors duration-300 ease-editorial cursor-pointer"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+                </span>
+                <span>Buka Live Board</span>
+                <ArrowRight size={14} />
+              </button>
             </div>
           </div>
 

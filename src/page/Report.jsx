@@ -91,7 +91,7 @@ export default function Cadangan() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-gray-800 flex flex-col justify-between">
+    <div className="min-h-screen bg-slate-50 font-sans text-gray-800 flex flex-col overflow-x-hidden justify-between">
       {/* Header Korporat (Sama Seperti Halaman Utama) */}
       <header className="bg-[#1f1d6b] text-white shadow-lg sticky top-0 z-50">
         {/* Bar Atas Ringkas */}
@@ -141,7 +141,7 @@ export default function Cadangan() {
           </div>
 
           {/* Navigasi */}
-          <nav className="flex items-center gap-2 sm:gap-6 text-sm font-medium">
+          <nav className="flex items-center gap-2 sm:gap-6 text-sm font-medium overflow-x-auto">
             <button
               onClick={() => navigate("/")}
               className="px-3 py-2 text-gray-200 hover:text-cyan-300 transition-colors flex items-center gap-1.5"
@@ -200,11 +200,10 @@ export default function Cadangan() {
           {/* Mesej Status Notifikasi */}
           {statusMessage && (
             <div
-              className={`mb-6 p-4 rounded-xl flex items-start gap-3 text-sm transition-all ${
-                statusMessage.type === "success"
-                  ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-                  : "bg-rose-50 text-rose-800 border border-rose-200"
-              }`}
+              className={`mb-6 p-4 rounded-xl flex items-start gap-3 text-sm transition-all ${statusMessage.type === "success"
+                ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                : "bg-rose-50 text-rose-800 border border-rose-200"
+                }`}
             >
               {statusMessage.type === "success" ? (
                 <CheckCircle2 size={20} className="text-emerald-600 mt-0.5 shrink-0" />
