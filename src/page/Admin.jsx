@@ -451,15 +451,19 @@ export default function Admin() {
     }
   };
 
-  const visibleTabs = role ? ALL_TABS : [];
+  const hasAccess = isDeveloper || role === "admin" || role === "exco";
 
-  const hasTabAccess = (tabId) => {
+  const canAccessTab = (tabId) => {
     if (isDeveloper) return true;
     if (role === "admin") {
-      return tabId !== "exco_users" && tabId !== "maintenance";
+      return tabId === "kafe_timeline" || tabId === "galeri" || tabId === "logs";
     }
     if (role === "exco") {
-      return allowedModules.includes(tabId);
+      return (
+        tabId !== "exco_users" &&
+        tabId !== "maintenance" &&
+        allowedModules.includes(tabId)
+      );
     }
     return false;
   };
@@ -550,7 +554,7 @@ export default function Admin() {
           <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center text-sm text-gray-500">
             Menyemak kebenaran modul untuk {user.email}...
           </div>
-        ) : visibleTabs.length === 0 ? (
+        ) : !hasAccess ? (
           <div className="max-w-lg mx-auto mt-12 bg-white rounded-3xl shadow-lg border border-red-200 p-8 text-center">
             <div className="w-14 h-14 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-4">
               <Lock size={28} />
@@ -580,10 +584,10 @@ export default function Admin() {
             </div>
 
             <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-8 border-b border-slate-200">
-              {visibleTabs.map((tab) => {
+              {ALL_TABS.map((tab) => {
                 const Icon = tab.icon;
                 const isSelected = activeTab === tab.id;
-                const isLockedForUser = !hasTabAccess(tab.id);
+                const isLockedForUser = !canAccessTab(tab.id);
                 return (
                   <button
                     key={tab.id}
@@ -592,7 +596,7 @@ export default function Admin() {
                       isSelected
                         ? "bg-[#1f1d6b] text-cyan-300 shadow-sm"
                         : "bg-white text-gray-600 hover:bg-slate-100 border border-slate-200"
-                    }`}
+                    } ${isLockedForUser && !isSelected ? "opacity-80" : ""}`}
                   >
                     <Icon size={16} />
                     <span>{tab.label}</span>
@@ -605,7 +609,7 @@ export default function Admin() {
             </div>
 
             {/* SKRIN PUTIH BERKUNCI UNTUK TAB YANG TIADA AKSES */}
-            {!hasTabAccess(activeTab) ? (
+            {!canAccessTab(activeTab) ? (
               <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-12 sm:p-16 text-center max-w-2xl mx-auto">
                 <div className="w-20 h-20 rounded-full bg-red-50 border border-red-100 text-red-500 flex items-center justify-center mx-auto mb-5">
                   <Lock size={40} />
@@ -614,8 +618,9 @@ export default function Admin() {
                   Akses Halaman Dikunci
                 </h2>
                 <p className="text-xs sm:text-sm text-gray-500 mt-2 leading-relaxed">
-                  Hanya Developer sahaja yang dapat mengakses dan mengubah
-                  tetapan halaman ini.
+                  {activeTab === "exco_users" || activeTab === "maintenance"
+                    ? "Hanya Developer sahaja yang dapat mengakses dan mengubah tetapan halaman ini."
+                    : "Akaun anda tidak diberikan kebenaran untuk mengakses modul ini. Sila hubungi Developer jika memerlukan akses."}
                 </p>
               </div>
             ) : (
