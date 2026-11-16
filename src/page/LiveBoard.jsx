@@ -174,7 +174,7 @@ export default function LiveBoard() {
           <div>
             <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-cyan-700 bg-cyan-50 px-3 py-1 rounded-full border border-cyan-200 mb-2">
               <Radio size={14} />
-              <span>Makluman Masa Nyata Firestore</span>
+              <span>Makluman Masa Nyata Kolej</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-extrabold text-[#1f1d6b] tracking-tight">
               Papan Informasi &amp; Status Kafe
