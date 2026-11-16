@@ -9,7 +9,8 @@ import {
   Wrench,
   Activity,
   Plus,
-  Trash2,
+  Pin,
+  Copy,  Trash2,
   Save,
   CheckCircle2,
   Lock,
@@ -34,7 +35,17 @@ import {
   db,
   DEVELOPER_EMAILS,
 } from "../firebase";
-import { DEFAULT_KAFE_LIST } from "./LiveBoard";
+import {
+  DEFAULT_KAFE_LIST,
+  formatRelativeTime,
+  getTimelineEffectiveMs,
+  getTimelineStatus,
+  sortTimeline,
+  getVisibleTimeline,
+  buildWhatsappText,
+  copyTextToClipboard,
+  PosterModal,
+} from "./LiveBoard";
 
 const ALL_TABS = [
   { id: "kafe_timeline", label: "Kafe & Timeline", icon: Coffee },
@@ -68,7 +79,18 @@ export default function Admin() {
     status: "Makluman",
     sebab: "",
     masa: "",
+    isPinned: false,
+    publishAt: "",
+    expireAt: "",
   });
+  const [nowTick, setNowTick] = useState(Date.now());
+  const [isPosterOpen, setIsPosterOpen] = useState(false);
+
+  // Segarkan status berjadual / tamat tempoh & masa relatif setiap 30 saat
+  useEffect(() => {
+    const tick = setInterval(() => setNowTick(Date.now()), 30000);
+    return () => clearInterval(tick);
+  }, []);
 
   // State: Galeri
   const [galeriItems, setGaleriItems] = useState([]);
@@ -143,11 +165,19 @@ export default function Admin() {
     modules: ["kafe_timeline"],
   });
 
-  // State: Suis Penyelenggaraan
+  // State: Suis Penyelenggaraan & Countdown PSPM
   const [maintenance, setMaintenance] = useState({
     enabled: false,
     message: "Portal JPP KMK sedang dalam penyelenggaraan berkala.",
     estimatedTime: "",
+  });
+  const [countdownConfig, setCountdownConfig] = useState({
+    title: "Peperiksaan Semester Program Matrikulasi (PSPM)",
+    targetDate: "2027-03-15T08:00",
+  });
+  const [visitorStats, setVisitorStats] = useState({
+    todayViews: 0,
+    last7DaysViews: 0,
   });
 
   // State: Activity Logs
@@ -298,6 +328,52 @@ export default function Admin() {
       handleListenerError
     );
 
+    const unsubCountdown = onSnapshot(
+      doc(db, "system_settings", "countdown"),
+      (snap) => {
+        if (snap.exists()) {
+          const data = snap.data();
+          setCountdownConfig((prev) => ({
+            title: data.title || prev.title,
+            targetDate: (data.targetDate || prev.targetDate).slice(0, 16),
+          }));
+        }
+      },
+      handleListenerError
+    );
+
+    const unsubStats = onSnapshot(
+      collection(db, "liveboard_stats"),
+      (snap) => {
+        const nowDate = new Date();
+        const formatYMD = (dt) => {
+          const y = dt.getFullYear();
+          const m = String(dt.getMonth() + 1).padStart(2, "0");
+          const d = String(dt.getDate()).padStart(2, "0");
+          return `${y}-${m}-${d}`;
+        };
+        const todayKey = formatYMD(nowDate);
+        const last7Keys = new Set();
+        for (let i = 0; i < 7; i += 1) {
+          const dt = new Date(nowDate);
+          dt.setDate(nowDate.getDate() - i);
+          last7Keys.add(formatYMD(dt));
+        }
+
+        let todayTotal = 0;
+        let weekTotal = 0;
+        snap.docs.forEach((docSnap) => {
+          const data = docSnap.data();
+          const dateKey = data.date || docSnap.id;
+          const v = Number(data.views) || 0;
+          if (dateKey === todayKey) todayTotal += v;
+          if (last7Keys.has(dateKey)) weekTotal += v;
+        });
+        setVisitorStats({ todayViews: todayTotal, last7DaysViews: weekTotal });
+      },
+      handleListenerError
+    );
+
     const unsubExco =
       role === "developer"
         ? onSnapshot(
@@ -330,6 +406,8 @@ export default function Admin() {
       unsubGaleri();
       unsubExco();
       unsubMaint();
+      unsubCountdown();
+      unsubStats();
       unsubLogs();
     };
   }, [user, role, allowedModules]);
@@ -371,10 +449,30 @@ export default function Admin() {
   const handleAddTimeline = async (e) => {
     e.preventDefault();
     if (!newTimeline.tajuk.trim()) return;
+
+    const publishAtMs = newTimeline.publishAt
+      ? new Date(newTimeline.publishAt).getTime()
+      : null;
+    const expireAtMs = newTimeline.expireAt
+      ? new Date(newTimeline.expireAt).getTime()
+      : null;
+
+    if (
+      (publishAtMs !== null && Number.isNaN(publishAtMs)) ||
+      (expireAtMs !== null && Number.isNaN(expireAtMs))
+    ) {
+      showToast("Tarikh/masa jadual tidak sah. Sila semak semula.");
+      return;
+    }
+    if (publishAtMs !== null && expireAtMs !== null && expireAtMs <= publishAtMs) {
+      showToast("Masa tamat tempoh mesti selepas masa terbitan.");
+      return;
+    }
+
     try {
       const masaText =
         newTimeline.masa.trim() ||
-        new Date().toLocaleTimeString("ms-MY", {
+        new Date(publishAtMs || Date.now()).toLocaleTimeString("ms-MY", {
           hour: "2-digit",
           minute: "2-digit",
         });
@@ -384,14 +482,43 @@ export default function Admin() {
         status: newTimeline.status.trim() || "Makluman",
         sebab: newTimeline.sebab.trim(),
         masa: masaText,
+        isPinned: Boolean(newTimeline.isPinned),
+        publishAtMs,
+        expireAtMs,
         createdAtMs: Date.now(),
       });
       await recordLog("Tambah Timeline", newTimeline.tajuk.trim());
-      setNewTimeline({ tajuk: "", status: "Makluman", sebab: "", masa: "" });
-      showToast("Item timeline baharu telah ditambah.");
+      setNewTimeline({
+        tajuk: "",
+        status: "Makluman",
+        sebab: "",
+        masa: "",
+        isPinned: false,
+        publishAt: "",
+        expireAt: "",
+      });
+      showToast(
+        publishAtMs && publishAtMs > Date.now()
+          ? "Item timeline telah dijadualkan."
+          : "Item timeline baharu telah ditambah."
+      );
     } catch (err) {
       showToast(`Gagal menambah timeline: ${err.message}`);
     }
+  };
+
+  // Perkongsian: hebahan WhatsApp & poster story (item aktif sahaja)
+  const shareTimelineItems = getVisibleTimeline(timelineList, nowTick);
+
+  const handleCopyWhatsapp = async () => {
+    const ok = await copyTextToClipboard(
+      buildWhatsappText(kafeList, shareTimelineItems)
+    );
+    showToast(
+      ok
+        ? "Hebahan WhatsApp telah disalin ke papan keratan."
+        : "Gagal menyalin teks. Sila cuba lagi."
+    );
   };
 
   const handleDeleteTimeline = async (id, tajuk) => {
@@ -507,6 +634,28 @@ export default function Admin() {
       showToast("Tetapan penyelenggaraan berjaya disimpan.");
     } catch (err) {
       showToast(`Gagal menyimpan tetapan: ${err.message}`);
+    }
+  };
+
+  // Simpan Tetapan Countdown PSPM
+  const handleSaveCountdown = async (e) => {
+    e.preventDefault();
+    try {
+      await setDoc(doc(db, "system_settings", "countdown"), {
+        title:
+          countdownConfig.title.trim() ||
+          "Peperiksaan Semester Program Matrikulasi (PSPM)",
+        targetDate: countdownConfig.targetDate || "2027-03-15T08:00:00",
+        updatedBy: user.email,
+        updatedAtMs: Date.now(),
+      });
+      await recordLog(
+        "Tetapan Countdown PSPM",
+        `${countdownConfig.title} (${countdownConfig.targetDate})`
+      );
+      showToast("Tetapan Countdown PSPM berjaya disimpan.");
+    } catch (err) {
+      showToast(`Gagal menyimpan countdown: ${err.message}`);
     }
   };
 
@@ -686,7 +835,38 @@ export default function Admin() {
               <>
             {/* TAB 1: KAFE & TIMELINE */}
             {activeTab === "kafe_timeline" && (
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <div className="space-y-6">
+                {/* Statistik Pelawat Live Board */}
+                <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <span className="text-[11px] font-bold uppercase tracking-widest text-cyan-700">
+                      Statistik Pelawat Live Board
+                    </span>
+                    <h3 className="text-base sm:text-lg font-extrabold text-[#1f1d6b]">
+                      Ringkasan Trafik Harian &amp; Mingguan
+                    </h3>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="rounded-xl bg-indigo-50/80 border border-indigo-100 px-4 py-2.5 text-center min-w-[130px]">
+                      <span className="block text-[10px] font-bold uppercase text-gray-500">
+                        Paparan Hari Ini
+                      </span>
+                      <span className="text-xl sm:text-2xl font-extrabold text-[#1f1d6b]">
+                        {visitorStats.todayViews}
+                      </span>
+                    </div>
+                    <div className="rounded-xl bg-cyan-50/80 border border-cyan-200 px-4 py-2.5 text-center min-w-[130px]">
+                      <span className="block text-[10px] font-bold uppercase text-cyan-800">
+                        7 Hari Terakhir
+                      </span>
+                      <span className="text-xl sm:text-2xl font-extrabold text-cyan-700">
+                        {visitorStats.last7DaysViews}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Kemas Kini Status Kafe */}
                 <div className="lg:col-span-6 space-y-4">
                   <h2 className="text-lg font-bold text-[#1f1d6b] border-b-2 border-cyan-500 pb-2">
@@ -790,6 +970,25 @@ export default function Admin() {
                     Tambah &amp; Urus Timeline Semasa
                   </h2>
 
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    <button
+                      type="button"
+                      onClick={handleCopyWhatsapp}
+                      className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition-colors cursor-pointer"
+                    >
+                      <Copy size={15} />
+                      <span>Salin Hebahan WhatsApp</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsPosterOpen(true)}
+                      className="inline-flex items-center gap-2 bg-[#1f1d6b] hover:bg-indigo-900 text-cyan-300 text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition-colors cursor-pointer"
+                    >
+                      <ImageIcon size={15} />
+                      <span>Jana Poster Story</span>
+                    </button>
+                  </div>
+
                   <form
                     onSubmit={handleAddTimeline}
                     className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-3"
@@ -839,6 +1038,57 @@ export default function Admin() {
                       }
                       className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs sm:text-sm"
                     />
+                    <label className="flex items-center gap-2 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-xs font-semibold text-amber-900 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={newTimeline.isPinned}
+                        onChange={(e) =>
+                          setNewTimeline({
+                            ...newTimeline,
+                            isPinned: e.target.checked,
+                          })
+                        }
+                        className="h-4 w-4 accent-amber-600"
+                      />
+                      <Pin size={13} />
+                      <span>Semat di Paling Atas (Pinned)</span>
+                    </label>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-semibold text-gray-600 mb-1">
+                          Jadualkan Terbitan — kosongkan untuk terbit serta-merta
+                        </label>
+                        <input
+                          type="datetime-local"
+                          value={newTimeline.publishAt}
+                          onChange={(e) =>
+                            setNewTimeline({
+                              ...newTimeline,
+                              publishAt: e.target.value,
+                            })
+                          }
+                          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-gray-600 mb-1">
+                          Tamat Tempoh Automatik — kosongkan jika kekal
+                        </label>
+                        <input
+                          type="datetime-local"
+                          value={newTimeline.expireAt}
+                          onChange={(e) =>
+                            setNewTimeline({
+                              ...newTimeline,
+                              expireAt: e.target.value,
+                            })
+                          }
+                          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs"
+                        />
+                      </div>
+                    </div>
+
                     <button
                       type="submit"
                       className="inline-flex items-center gap-1.5 bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-colors cursor-pointer"
@@ -849,36 +1099,101 @@ export default function Admin() {
                   </form>
 
                   <div className="space-y-3">
-                    {timelineList.map((item) => (
-                      <div
-                        key={item.id}
-                        className="bg-white rounded-xl border border-slate-200 p-4 flex items-start justify-between gap-3"
-                      >
-                        <div>
-                          <div className="flex items-center gap-2 text-[11px] font-semibold text-cyan-700">
-                            <span>{item.masa}</span>
-                            <span>•</span>
-                            <span>{item.status}</span>
-                          </div>
-                          <h4 className="font-bold text-sm text-gray-900 mt-0.5">
-                            {item.tajuk}
-                          </h4>
-                          <p className="text-xs text-gray-600 mt-1">
-                            {item.sebab}
-                          </p>
-                        </div>
-                        <button
-                          onClick={() =>
-                            handleDeleteTimeline(item.id, item.tajuk)
-                          }
-                          aria-label="Padam item timeline"
-                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer shrink-0"
+                    {sortTimeline(timelineList).map((item) => {
+                      const itemStatus = getTimelineStatus(item, nowTick);
+                      const relativeText = formatRelativeTime(
+                        getTimelineEffectiveMs(item),
+                        nowTick
+                      );
+                      const statusBadge =
+                        itemStatus === "scheduled"
+                          ? {
+                              label: "Berjadual",
+                              cls: "bg-blue-50 text-blue-700 border-blue-200",
+                            }
+                          : itemStatus === "expired"
+                          ? {
+                              label: "Tamat Tempoh",
+                              cls: "bg-slate-100 text-slate-600 border-slate-300",
+                            }
+                          : {
+                              label: "Aktif",
+                              cls: "bg-emerald-50 text-emerald-700 border-emerald-200",
+                            };
+                      return (
+                        <div
+                          key={item.id}
+                          className={`rounded-xl border p-4 flex items-start justify-between gap-3 ${
+                            item.isPinned
+                              ? "bg-amber-50/70 border-amber-300"
+                              : "bg-white border-slate-200"
+                          } ${itemStatus === "expired" ? "opacity-70" : ""}`}
                         >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    ))}
+                          <div>
+                            <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-cyan-700">
+                              <span
+                                className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] font-bold ${statusBadge.cls}`}
+                              >
+                                {statusBadge.label}
+                              </span>
+                              {item.isPinned && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-amber-300 bg-amber-200 text-amber-900 text-[10px] font-extrabold">
+                                  <Pin size={10} />
+                                  DISEMAT
+                                </span>
+                              )}
+                              <span>{item.masa}</span>
+                              {relativeText && (
+                                <span className="text-gray-400 font-medium">
+                                  • {relativeText}
+                                </span>
+                              )}
+                              <span>•</span>
+                              <span>{item.status}</span>
+                            </div>
+                            <h4 className="font-bold text-sm text-gray-900 mt-0.5">
+                              {item.tajuk}
+                            </h4>
+                            <p className="text-xs text-gray-600 mt-1">
+                              {item.sebab}
+                            </p>
+                            {(item.publishAtMs || item.expireAtMs) && (
+                              <p className="text-[10px] text-gray-400 mt-1.5">
+                                {item.publishAtMs
+                                  ? `Terbit: ${new Date(
+                                      item.publishAtMs
+                                    ).toLocaleString("ms-MY")}`
+                                  : ""}
+                                {item.publishAtMs && item.expireAtMs ? " • " : ""}
+                                {item.expireAtMs
+                                  ? `Tamat: ${new Date(
+                                      item.expireAtMs
+                                    ).toLocaleString("ms-MY")}`
+                                  : ""}
+                              </p>
+                            )}
+                          </div>
+                          <button
+                            onClick={() =>
+                              handleDeleteTimeline(item.id, item.tajuk)
+                            }
+                            aria-label="Padam item timeline"
+                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer shrink-0"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      );
+                    })}
                   </div>
+
+                  <PosterModal
+                    open={isPosterOpen}
+                    onClose={() => setIsPosterOpen(false)}
+                    kafeItems={kafeList}
+                    timelineItems={shareTimelineItems}
+                  />
+                </div>
                 </div>
               </div>
             )}
@@ -1201,11 +1516,12 @@ export default function Admin() {
               </div>
             )}
 
-            {/* TAB 4: SUIS PENYELENGGARAAN */}
+            {/* TAB 4: SUIS PENYELENGGARAAN & COUNTDOWN PSPM */}
             {activeTab === "maintenance" && isDeveloper && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
               <form
                 onSubmit={handleSaveMaintenance}
-                className="max-w-xl bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4"
+                className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4"
               >
                 <h2 className="text-lg font-bold text-[#1f1d6b] border-b-2 border-cyan-500 pb-2">
                   Suis Penyelenggaraan Portal
@@ -1276,6 +1592,61 @@ export default function Admin() {
                   <span>Simpan Tetapan</span>
                 </button>
               </form>
+
+              <form
+                onSubmit={handleSaveCountdown}
+                className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4"
+              >
+                <h2 className="text-lg font-bold text-[#1f1d6b] border-b-2 border-cyan-500 pb-2">
+                  Tetapan Countdown PSPM
+                </h2>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">
+                    Tajuk Acara / Peperiksaan:
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Peperiksaan Semester Program Matrikulasi (PSPM)"
+                    value={countdownConfig.title}
+                    onChange={(e) =>
+                      setCountdownConfig({
+                        ...countdownConfig,
+                        title: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs sm:text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">
+                    Tarikh &amp; Masa Sasaran:
+                  </label>
+                  <input
+                    type="datetime-local"
+                    required
+                    value={countdownConfig.targetDate}
+                    onChange={(e) =>
+                      setCountdownConfig({
+                        ...countdownConfig,
+                        targetDate: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs sm:text-sm"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-1.5 bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-colors cursor-pointer"
+                >
+                  <Save size={15} />
+                  <span>Simpan Countdown PSPM</span>
+                </button>
+              </form>
+              </div>
             )}
 
             {/* TAB 5: LOG AKTIVITI */}

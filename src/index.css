@@ -35,6 +35,25 @@
   transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+@keyframes marqueeTicker {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-marquee-ticker {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marqueeTicker 28s linear infinite;
+}
+
+.animate-marquee-ticker:hover {
+  animation-play-state: paused;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-hero-in {
     animation: none;
@@ -45,5 +64,10 @@
   .animate-tab-progress {
     animation: none;
     transform: scaleX(1);
+  }
+
+  .animate-marquee-ticker {
+    animation: none;
+    transform: none;
   }
 }

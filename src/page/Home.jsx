@@ -17,10 +17,17 @@ import {
   Menu,
   X,
   ExternalLink,
+  Coffee,
+  Clock,
+  Calculator,
+  Radio,
+  CheckCircle2,
+  AlertTriangle,
 } from "lucide-react";
 import { useNavigate } from "react-router";
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, doc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
+import { DEFAULT_KAFE_LIST } from "./LiveBoard";
 
 // renew gambar dekat sni
 import LogoJppKMK from "../logo kmk jpp.jpeg";
@@ -268,8 +275,83 @@ export default function App() {
   ];
 
   const [galeriList, setGaleriList] = useState(DEFAULT_GALERI_LIST);
+  const [kafeMiniList, setKafeMiniList] = useState(DEFAULT_KAFE_LIST);
+  const [tickerItems, setTickerItems] = useState([
+    {
+      id: "default_1",
+      tajuk: "Selamat Datang ke Portal Rasmi JPP Kolej Matrikulasi Kedah",
+      status: "Makluman",
+      isPinned: true,
+    },
+    {
+      id: "default_2",
+      tajuk: "Semak status operasi Kafe A, B & C secara masa nyata di Live Board",
+      status: "Info",
+    },
+  ]);
+  const [countdownInfo, setCountdownInfo] = useState({
+    title: "Peperiksaan Semester Program Matrikulasi (PSPM)",
+    targetDate: "2027-03-15T08:00:00",
+  });
+  const [countdownLeft, setCountdownLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  // State Kalkulator Sasaran PNGK (4 Subjek Teras)
+  const GRADE_OPTIONS = [
+    { label: "A (4.00)", value: 4.0 },
+    { label: "A- (3.67)", value: 3.67 },
+    { label: "B+ (3.33)", value: 3.33 },
+    { label: "B (3.00)", value: 3.0 },
+    { label: "B- (2.67)", value: 2.67 },
+    { label: "C+ (2.33)", value: 2.33 },
+    { label: "C (2.00)", value: 2.0 },
+    { label: "C- (1.67)", value: 1.67 },
+    { label: "D+ (1.33)", value: 1.33 },
+    { label: "D (1.00)", value: 1.0 },
+    { label: "F (0.00)", value: 0.0 },
+  ];
+  const [gpaSubjects, setGpaSubjects] = useState([
+    { name: "Subjek Teras 1", grade: 4.0, credit: 5 },
+    { name: "Subjek Teras 2", grade: 4.0, credit: 5 },
+    { name: "Subjek Teras 3", grade: 3.67, credit: 4 },
+    { name: "Subjek Teras 4", grade: 4.0, credit: 4 },
+  ]);
+
+  const totalCredits = gpaSubjects.reduce(
+    (sum, s) => sum + Number(s.credit || 0),
+    0
+  );
+  const totalPoints = gpaSubjects.reduce(
+    (sum, s) => sum + Number(s.grade) * Number(s.credit || 0),
+    0
+  );
+  const calculatedPngk =
+    totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : "0.00";
+  const numericPngk = parseFloat(calculatedPngk);
+  const pngkStatus =
+    numericPngk >= 3.75
+      ? {
+          label: "Anugerah Pengarah",
+          cls: "bg-emerald-50 text-emerald-700 border-emerald-200",
+        }
+      : numericPngk >= 3.5
+      ? {
+          label: "Cemerlang",
+          cls: "bg-cyan-50 text-cyan-800 border-cyan-200",
+        }
+      : {
+          label: "Lulus",
+          cls: "bg-indigo-50 text-[#1f1d6b] border-indigo-200",
+        };
 
   useEffect(() => {
+    const handleListenerError = (error) =>
+      console.error("Firestore listener error:", error);
+
     const unsubGaleri = onSnapshot(
       collection(db, "galeri_events"),
       (snapshot) => {
@@ -285,12 +367,93 @@ export default function App() {
           setGaleriList(DEFAULT_GALERI_LIST);
         }
       },
-      (error) => console.error("Firestore listener error:", error)
+      handleListenerError
     );
 
-    return () => unsubGaleri();
+    const unsubTimeline = onSnapshot(
+      collection(db, "liveboard_timeline"),
+      (snapshot) => {
+        if (!snapshot.empty) {
+          const nowMs = Date.now();
+          const activeDocs = snapshot.docs
+            .map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }))
+            .filter(
+              (item) =>
+                (!item.publishAtMs || nowMs >= item.publishAtMs) &&
+                (!item.expireAtMs || nowMs < item.expireAtMs)
+            );
+          activeDocs.sort((a, b) => {
+            const pinDiff =
+              Number(Boolean(b.isPinned)) - Number(Boolean(a.isPinned));
+            if (pinDiff !== 0) return pinDiff;
+            return (b.createdAtMs || 0) - (a.createdAtMs || 0);
+          });
+          if (activeDocs.length > 0) {
+            setTickerItems(activeDocs.slice(0, 3));
+          }
+        }
+      },
+      handleListenerError
+    );
+
+    const unsubKafe = onSnapshot(
+      collection(db, "liveboard_kafe"),
+      (snapshot) => {
+        if (!snapshot.empty) {
+          const docs = snapshot.docs.map((docSnap) => ({
+            id: docSnap.id,
+            ...docSnap.data(),
+          }));
+          docs.sort((a, b) => (a.susunan || 99) - (b.susunan || 99));
+          setKafeMiniList(docs);
+        } else {
+          setKafeMiniList(DEFAULT_KAFE_LIST);
+        }
+      },
+      handleListenerError
+    );
+
+    const unsubCountdown = onSnapshot(
+      doc(db, "system_settings", "countdown"),
+      (snap) => {
+        if (snap.exists()) {
+          const data = snap.data();
+          setCountdownInfo({
+            title:
+              data.title ||
+              "Peperiksaan Semester Program Matrikulasi (PSPM)",
+            targetDate: data.targetDate || "2027-03-15T08:00:00",
+          });
+        }
+      },
+      handleListenerError
+    );
+
+    return () => {
+      unsubGaleri();
+      unsubTimeline();
+      unsubKafe();
+      unsubCountdown();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Kiraan detik setiap saat menuju targetDate PSPM
+  useEffect(() => {
+    const updateTimer = () => {
+      const targetMs = new Date(countdownInfo.targetDate).getTime();
+      const diff = Math.max(0, targetMs - Date.now());
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+      setCountdownLeft({ days, hours, minutes, seconds });
+    };
+
+    updateTimer();
+    const intervalId = setInterval(updateTimer, 1000);
+    return () => clearInterval(intervalId);
+  }, [countdownInfo.targetDate]);
 
   const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
@@ -364,6 +527,45 @@ export default function App() {
           <Share2 size={20} />
         </button>
       </aside>
+
+      {/* Ticker Berita Bergerak (Marquee) di atas Hero */}
+      <div
+        onClick={() => navigate("/live-board")}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") navigate("/live-board");
+        }}
+        className="bg-[#1f1d6b] text-white border-b border-cyan-400/40 py-2 px-4 cursor-pointer overflow-hidden relative z-50 hover:bg-indigo-950 transition-colors"
+      >
+        <div className="max-w-7xl mx-auto flex items-center gap-3">
+          <span className="inline-flex items-center gap-1.5 bg-red-500/20 border border-red-400/50 text-red-200 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider shrink-0">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+            </span>
+            <span>TERKINI</span>
+          </span>
+
+          <div className="overflow-hidden flex-1">
+            <div className="animate-marquee-ticker text-xs font-medium text-gray-100">
+              {[...tickerItems, ...tickerItems].map((item, idx) => (
+                <span key={`${item.id}-${idx}`} className="mx-6 inline-flex items-center gap-2">
+                  <span className="text-cyan-300 font-bold">
+                    [{item.isPinned ? "DISEMAT" : item.status || "Info"}]
+                  </span>
+                  <span>{item.tajuk}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold text-cyan-300 shrink-0">
+            <span>Live Board</span>
+            <ArrowRight size={13} />
+          </span>
+        </div>
+      </div>
 
       {/* Hero Section */}
       <div className="relative w-full h-[100dvh] min-h-[600px] max-h-[900px] overflow-hidden bg-gray-950">
@@ -616,7 +818,78 @@ export default function App() {
       />
 
       {/* Kandungan Bahagian Bawah (Animasi Skrol Masuk) */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 space-y-12 md:space-y-16">
+        {/* Widget Mini Status Kafe */}
+        <RevealOnScroll direction="bottom" delay={50}>
+          <section className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-[#1f1d6b] text-cyan-300 flex items-center justify-center shrink-0">
+                  <Coffee size={18} />
+                </div>
+                <div>
+                  <h2 className="text-base sm:text-lg font-extrabold text-[#1f1d6b] leading-tight">
+                    Status Operasi Kafe Semasa
+                  </h2>
+                  <p className="text-[11px] text-gray-500">
+                    Kemas kini masa nyata daripada Live Board JPP KMK
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => navigate("/live-board")}
+                className="inline-flex items-center gap-1.5 bg-[#1f1d6b] hover:bg-indigo-900 text-cyan-300 text-xs font-bold px-3.5 py-2 rounded-xl transition-colors cursor-pointer self-start sm:self-auto"
+              >
+                <Radio size={14} />
+                <span>Lihat Live Board Penuh</span>
+                <ArrowRight size={14} />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+              {kafeMiniList.slice(0, 3).map((kafe, idx) => {
+                const isClosed =
+                  (kafe.status || "").trim().toLowerCase() === "ditutup";
+                return (
+                  <div
+                    key={kafe.id || idx}
+                    onClick={() => navigate("/live-board")}
+                    className={`rounded-2xl border p-4 flex items-center justify-between gap-3 cursor-pointer transition-transform duration-300 ease-editorial hover:-translate-y-0.5 ${
+                      isClosed
+                        ? "bg-red-50/80 border-red-200"
+                        : "bg-slate-50/80 border-slate-200/80 hover:border-cyan-300"
+                    }`}
+                  >
+                    <div className="min-w-0">
+                      <h3 className="text-xs sm:text-sm font-bold text-[#1f1d6b] truncate">
+                        {kafe.tajuk}
+                      </h3>
+                      <p className="text-[11px] text-gray-500 truncate mt-0.5">
+                        {isClosed && kafe.tarikh_buka && kafe.tarikh_buka !== "-"
+                          ? `Ditutup sehingga: ${kafe.tarikh_buka}`
+                          : kafe.sebab || "Beroperasi seperti biasa"}
+                      </p>
+                    </div>
+
+                    {isClosed ? (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-100 text-red-700 border border-red-300 shrink-0">
+                        <AlertTriangle size={11} />
+                        <span>Ditutup</span>
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                        <CheckCircle2 size={11} />
+                        <span>Buka</span>
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        </RevealOnScroll>
+
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14 items-start overflow-hidden">
           {/* Gambar Kiri (Ratio 1:1, Untuk setup lain nanti) */}
           <RevealOnScroll
@@ -827,6 +1100,189 @@ export default function App() {
             </RevealOnScroll>
           </div>
         </section>
+
+        {/* Seksyen Hab Pelajar KMK (3 Kolum) */}
+        <RevealOnScroll direction="bottom" delay={150}>
+          <section className="space-y-6">
+            <div className="flex items-center justify-between border-b-2 border-cyan-500 pb-2">
+              <h2 className="text-[#1f1d6b] text-lg sm:text-2xl font-extrabold uppercase tracking-wider">
+                Hab Pelajar KMK
+              </h2>
+              <span className="text-xs font-semibold text-cyan-700 bg-cyan-50 border border-cyan-200 px-3 py-1 rounded-full">
+                Utiliti &amp; Akademik
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+              {/* Kad 1: Countdown PSPM */}
+              <div className="bg-gradient-to-br from-[#1f1d6b] via-indigo-900 to-slate-900 text-white rounded-3xl p-6 shadow-lg flex flex-col justify-between">
+                <div>
+                  <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-cyan-300 bg-white/10 border border-white/15 px-2.5 py-1 rounded-full">
+                    <Clock size={12} />
+                    <span>Kiraan Detik Akademik</span>
+                  </span>
+                  <h3 className="text-base sm:text-lg font-extrabold mt-3 leading-snug text-white">
+                    {countdownInfo.title}
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-4 gap-2.5 my-6">
+                  {[
+                    { label: "Hari", value: countdownLeft.days },
+                    { label: "Jam", value: countdownLeft.hours },
+                    { label: "Minit", value: countdownLeft.minutes },
+                    { label: "Saat", value: countdownLeft.seconds },
+                  ].map((unit) => (
+                    <div
+                      key={unit.label}
+                      className="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl py-3 px-2 text-center"
+                    >
+                      <span className="block text-xl sm:text-2xl font-black text-cyan-300 tabular-nums">
+                        {String(unit.value).padStart(2, "0")}
+                      </span>
+                      <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-300">
+                        {unit.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <p className="text-[11px] text-indigo-200 text-center">
+                  Sasaran:{" "}
+                  {new Date(countdownInfo.targetDate).toLocaleDateString(
+                    "ms-MY",
+                    {
+                      day: "2-digit",
+                      month: "long",
+                      year: "numeric",
+                    }
+                  )}
+                </p>
+              </div>
+
+              {/* Kad 2: Kalkulator Sasaran PNGK Matrikulasi */}
+              <div className="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <h3 className="text-base font-extrabold text-[#1f1d6b] flex items-center gap-2">
+                      <Calculator size={18} className="text-cyan-600" />
+                      <span>Kalkulator Sasaran PNGK</span>
+                    </h3>
+                    <span
+                      className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${pngkStatus.cls}`}
+                    >
+                      {pngkStatus.label}
+                    </span>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    {gpaSubjects.map((sub, idx) => (
+                      <div
+                        key={sub.name}
+                        className="grid grid-cols-12 gap-2 items-center text-xs"
+                      >
+                        <span className="col-span-5 font-semibold text-gray-700 truncate">
+                          {sub.name}
+                        </span>
+                        <select
+                          aria-label={`Gred ${sub.name}`}
+                          value={sub.grade}
+                          onChange={(e) => {
+                            const updated = [...gpaSubjects];
+                            updated[idx] = {
+                              ...sub,
+                              grade: parseFloat(e.target.value),
+                            };
+                            setGpaSubjects(updated);
+                          }}
+                          className="col-span-4 rounded-lg border border-slate-200 px-2 py-1.5 text-xs font-semibold text-[#1f1d6b] bg-slate-50"
+                        >
+                          {GRADE_OPTIONS.map((g) => (
+                            <option key={g.label} value={g.value}>
+                              {g.label}
+                            </option>
+                          ))}
+                        </select>
+                        <select
+                          aria-label={`Jam Kredit ${sub.name}`}
+                          value={sub.credit}
+                          onChange={(e) => {
+                            const updated = [...gpaSubjects];
+                            updated[idx] = {
+                              ...sub,
+                              credit: parseInt(e.target.value, 10),
+                            };
+                            setGpaSubjects(updated);
+                          }}
+                          className="col-span-3 rounded-lg border border-slate-200 px-2 py-1.5 text-xs text-gray-700 bg-slate-50"
+                        >
+                          <option value={4}>4 Jam</option>
+                          <option value={5}>5 Jam</option>
+                        </select>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                  <span className="text-xs font-semibold text-gray-500">
+                    Anggaran PNGK Semasa:
+                  </span>
+                  <span className="text-2xl font-black text-[#1f1d6b] tabular-nums">
+                    {calculatedPngk}
+                  </span>
+                </div>
+              </div>
+
+              {/* Kad 3: Pautan Pantas Rasmi KPM */}
+              <div className="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-sm flex flex-col justify-between">
+                <div>
+                  <h3 className="text-base font-extrabold text-[#1f1d6b] mb-1">
+                    Pautan Pantas Rasmi KPM
+                  </h3>
+                  <p className="text-xs text-gray-500 mb-4">
+                    Akses terus ke portal akademik &amp; perkhidmatan pelajar
+                  </p>
+
+                  <div className="space-y-2.5">
+                    {[
+                      {
+                        label: "Portal Rasmi BMKPM (KPM)",
+                        url: "https://www.moe.gov.my",
+                      },
+                      {
+                        label: "Sistem Pembelajaran DELIMa",
+                        url: "https://d2.delima.edu.my",
+                      },
+                      {
+                        label: "Semakan Keputusan Matrikulasi",
+                        url: "https://matrikulasi.moe.gov.my",
+                      },
+                      {
+                        label: "e-Mel Rasmi Pelajar (Google Workspace)",
+                        url: "https://mail.google.com",
+                      },
+                    ].map((item) => (
+                      <a
+                        key={item.label}
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex items-center justify-between gap-2 rounded-xl border border-slate-200 hover:border-cyan-400 bg-slate-50/70 hover:bg-cyan-50/50 px-3.5 py-2.5 text-xs font-semibold text-gray-800 hover:text-[#1f1d6b] transition-colors"
+                      >
+                        <span className="truncate">{item.label}</span>
+                        <ExternalLink
+                          size={14}
+                          className="text-gray-400 group-hover:text-cyan-600 shrink-0"
+                        />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </RevealOnScroll>
       </main>
 
       {/* Footer (Meluncur Masuk Dari Bawah) */}
