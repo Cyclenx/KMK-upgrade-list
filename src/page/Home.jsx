@@ -19,6 +19,8 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { useNavigate } from "react-router";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "../firebase";
 
 // renew gambar dekat sni
 import LogoJppKMK from "../logo kmk jpp.jpeg";
@@ -232,7 +234,7 @@ export default function App() {
     },
   ];
 
-  const galeriList = [
+  const DEFAULT_GALERI_LIST = [
     {
       id: 0,
       tajuk: "Hari Pendaftaran Pelajar Baharu",
@@ -264,6 +266,31 @@ export default function App() {
       driveLink: "https://drive.google.com/drive/folders/GANTIKAN_ID_FOLDER_3",
     },
   ];
+
+  const [galeriList, setGaleriList] = useState(DEFAULT_GALERI_LIST);
+
+  useEffect(() => {
+    const unsubGaleri = onSnapshot(
+      collection(db, "galeri_events"),
+      (snapshot) => {
+        if (!snapshot.empty) {
+          const docs = snapshot.docs.map((docSnap) => ({
+            id: docSnap.id,
+            ...docSnap.data(),
+          }));
+          docs.sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
+          setGaleriList(docs);
+          setCurrentGaleriSlide((prev) => (prev >= docs.length ? 0 : prev));
+        } else {
+          setGaleriList(DEFAULT_GALERI_LIST);
+        }
+      },
+      (error) => console.error("Firestore listener error:", error)
+    );
+
+    return () => unsubGaleri();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));

@@ -72,6 +72,8 @@ export default function Admin() {
 
   // State: Galeri
   const [galeriItems, setGaleriItems] = useState([]);
+  const [galeriInputMode, setGaleriInputMode] = useState("upload");
+  const [isCompressingImage, setIsCompressingImage] = useState(false);
   const [newGaleri, setNewGaleri] = useState({
     tajuk: "",
     kategori: "Aktiviti Kampus",
@@ -79,6 +81,57 @@ export default function Admin() {
     image: "",
     driveLink: "",
   });
+
+  const convertGoogleDriveImageUrl = (rawUrl) => {
+    if (!rawUrl || typeof rawUrl !== "string") return rawUrl;
+    const trimmed = rawUrl.trim();
+    const fileMatch = trimmed.match(/drive\.google\.com\/file\/d\/([^/]+)/i);
+    if (fileMatch && fileMatch[1]) {
+      return `https://drive.google.com/thumbnail?id=${fileMatch[1]}&sz=w1000`;
+    }
+    const idParamMatch = trimmed.match(/drive\.google\.com\/.*[?&]id=([^&]+)/i);
+    if (idParamMatch && idParamMatch[1]) {
+      return `https://drive.google.com/thumbnail?id=${idParamMatch[1]}&sz=w1000`;
+    }
+    return trimmed;
+  };
+
+  const handleGaleriFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsCompressingImage(true);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const maxWidth = 1000;
+        const scale = img.width > maxWidth ? maxWidth / img.width : 1;
+        const targetWidth = Math.round(img.width * scale);
+        const targetHeight = Math.round(img.height * scale);
+
+        const canvas = document.createElement("canvas");
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+        const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.75);
+        setNewGaleri((prev) => ({ ...prev, image: compressedDataUrl }));
+        setIsCompressingImage(false);
+      };
+      img.onerror = () => {
+        setIsCompressingImage(false);
+        showToast("Gagal membaca fail gambar. Sila pilih fail lain.");
+      };
+      img.src = event.target?.result;
+    };
+    reader.onerror = () => {
+      setIsCompressingImage(false);
+      showToast("Gagal memuatkan fail gambar.");
+    };
+    reader.readAsDataURL(file);
+  };
 
   // State: Exco Admin Users
   const [excoUsers, setExcoUsers] = useState([]);
@@ -355,9 +408,15 @@ export default function Admin() {
   const handleAddGaleri = async (e) => {
     e.preventDefault();
     if (!newGaleri.tajuk.trim()) return;
+    if (!newGaleri.image.trim()) {
+      showToast("Sila muat naik gambar atau masukkan pautan gambar terlebih dahulu.");
+      return;
+    }
     try {
+      const finalImage = convertGoogleDriveImageUrl(newGaleri.image);
       await addDoc(collection(db, "galeri_events"), {
         ...newGaleri,
+        image: finalImage,
         createdAtMs: Date.now(),
       });
       await recordLog("Tambah Galeri KMK", newGaleri.tajuk.trim());
@@ -853,16 +912,78 @@ export default function Admin() {
                     }
                     className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs sm:text-sm"
                   />
-                  <input
-                    type="text"
-                    required
-                    placeholder="URL Gambar atau laluan src/image/..."
-                    value={newGaleri.image}
-                    onChange={(e) =>
-                      setNewGaleri({ ...newGaleri, image: e.target.value })
-                    }
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs sm:text-sm"
-                  />
+                  <div className="space-y-2.5 rounded-xl border border-slate-200 bg-slate-50/70 p-3.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs font-bold text-[#1f1d6b]">
+                        Gambar Pratonton Galeri
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setGaleriInputMode(
+                            galeriInputMode === "upload" ? "url" : "upload"
+                          )
+                        }
+                        className="text-[11px] font-semibold text-cyan-700 hover:text-cyan-900 underline cursor-pointer"
+                      >
+                        {galeriInputMode === "upload"
+                          ? "Atau guna pautan gambar luar"
+                          : "Kembali ke muat naik fail"}
+                      </button>
+                    </div>
+
+                    {galeriInputMode === "upload" ? (
+                      <label className="flex flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-cyan-300 bg-white hover:bg-cyan-50/50 px-4 py-4 text-center cursor-pointer transition-colors">
+                        <ImageIcon size={22} className="text-cyan-600" />
+                        <span className="text-xs font-semibold text-gray-700">
+                          {isCompressingImage
+                            ? "Sedang memampatkan gambar..."
+                            : "Pilih atau ambil gambar (Auto-mampat <= 1000px)"}
+                        </span>
+                        <span className="text-[10px] text-gray-400">
+                          Mesra telefon &amp; laptop (JPG, PNG, WEBP)
+                        </span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleGaleriFileChange}
+                          className="hidden"
+                        />
+                      </label>
+                    ) : (
+                      <input
+                        type="text"
+                        placeholder="Tampal URL gambar atau pautan fail Google Drive..."
+                        value={newGaleri.image}
+                        onChange={(e) =>
+                          setNewGaleri({
+                            ...newGaleri,
+                            image: convertGoogleDriveImageUrl(e.target.value),
+                          })
+                        }
+                        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs sm:text-sm"
+                      />
+                    )}
+
+                    {newGaleri.image && (
+                      <div className="relative rounded-xl overflow-hidden border border-slate-200 bg-gray-100 aspect-[4/2]">
+                        <img
+                          src={newGaleri.image}
+                          alt="Pratonton Galeri"
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setNewGaleri((prev) => ({ ...prev, image: "" }))
+                          }
+                          className="absolute top-2 right-2 bg-black/60 hover:bg-red-600 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full transition-colors cursor-pointer"
+                        >
+                          Buang Gambar
+                        </button>
+                      </div>
+                    )}
+                  </div>
                   <input
                     type="url"
                     required
