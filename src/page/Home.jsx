@@ -29,6 +29,17 @@ import { collection, doc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 import { DEFAULT_KAFE_LIST } from "./LiveBoard";
 
+// 174 slide banner
+// 217 pengurusan tertinggi
+//
+//
+//
+//
+//
+//
+//
+//
+
 // renew gambar dekat sni
 import LogoJppKMK from "../logo kmk jpp.jpeg";
 import QrImage from "../image/sampah ii/qr.jpg";
