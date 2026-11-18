@@ -10,7 +10,8 @@ import {
   Activity,
   Plus,
   Pin,
-  Copy,  Trash2,
+  Copy,
+  Calendar,  Trash2,
   Save,
   CheckCircle2,
   Lock,
@@ -49,7 +50,8 @@ import {
 
 const ALL_TABS = [
   { id: "kafe_timeline", label: "Kafe & Timeline", icon: Coffee },
-  { id: "galeri", label: "Galeri", icon: ImageIcon },
+  { id: "galeri", label: "Galeri Album", icon: ImageIcon },
+  { id: "aktiviti", label: "Jejak Aktiviti JPP", icon: Calendar },
   { id: "exco_users", label: "Pengurusan E-mel Exco", icon: Users, devOnly: true },
   { id: "maintenance", label: "Suis Penyelenggaraan", icon: Wrench, devOnly: true },
   { id: "logs", label: "Log Aktiviti", icon: Activity },
@@ -57,9 +59,27 @@ const ALL_TABS = [
 
 const ASSIGNABLE_MODULES = [
   { id: "kafe_timeline", label: "Kafe & Timeline" },
-  { id: "galeri", label: "Galeri KMK" },
+  { id: "galeri", label: "Galeri Album" },
+  { id: "aktiviti", label: "Jejak Aktiviti JPP" },
   { id: "logs", label: "Log Aktiviti" },
 ];
+
+const FIRESTORE_DOC_LIMIT_BYTES = 1048576; // 1 MB
+
+function calculateBytes(obj) {
+  try {
+    return new TextEncoder().encode(JSON.stringify(obj ?? {})).length;
+  } catch {
+    return 0;
+  }
+}
+
+function formatBytes(bytes) {
+  const num = Number(bytes) || 0;
+  if (num < 1024) return `${num} B`;
+  if (num < 1024 * 1024) return `${(num / 1024).toFixed(2)} KB`;
+  return `${(num / (1024 * 1024)).toFixed(2)} MB`;
+}
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -103,6 +123,58 @@ export default function Admin() {
     image: "",
     driveLink: "",
   });
+
+  // State: Jejak Aktiviti JPP (jpp_activities)
+  const [jppActivities, setJppActivities] = useState([]);
+  const [isCompressingActivityImg, setIsCompressingActivityImg] =
+    useState(false);
+  const [newActivity, setNewActivity] = useState({
+    title: "",
+    dateStr: "",
+    category: "Akademik",
+    location: "",
+    participants: "",
+    description: "",
+    image: "",
+    reportUrl: "",
+  });
+
+  const handleActivityFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsCompressingActivityImg(true);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const maxWidth = 800;
+        const scale = img.width > maxWidth ? maxWidth / img.width : 1;
+        const targetWidth = Math.round(img.width * scale);
+        const targetHeight = Math.round(img.height * scale);
+
+        const canvas = document.createElement("canvas");
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+        const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.75);
+        setNewActivity((prev) => ({ ...prev, image: compressedDataUrl }));
+        setIsCompressingActivityImg(false);
+      };
+      img.onerror = () => {
+        setIsCompressingActivityImg(false);
+        showToast("Gagal membaca fail gambar aktiviti.");
+      };
+      img.src = event.target?.result;
+    };
+    reader.onerror = () => {
+      setIsCompressingActivityImg(false);
+      showToast("Gagal memuatkan fail gambar aktiviti.");
+    };
+    reader.readAsDataURL(file);
+  };
 
   const convertGoogleDriveImageUrl = (rawUrl) => {
     if (!rawUrl || typeof rawUrl !== "string") return rawUrl;
@@ -318,6 +390,22 @@ export default function Admin() {
       handleListenerError
     );
 
+    const unsubActivities = onSnapshot(
+      collection(db, "jpp_activities"),
+      (snap) => {
+        const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        docs.sort((a, b) => {
+          const cmp = String(b.dateStr || "").localeCompare(
+            String(a.dateStr || "")
+          );
+          if (cmp !== 0) return cmp;
+          return (b.createdAtMs || 0) - (a.createdAtMs || 0);
+        });
+        setJppActivities(docs);
+      },
+      handleListenerError
+    );
+
     const unsubMaint = onSnapshot(
       doc(db, "system_settings", "maintenance"),
       (snap) => {
@@ -404,6 +492,7 @@ export default function Admin() {
       unsubKafe();
       unsubTimeline();
       unsubGaleri();
+      unsubActivities();
       unsubExco();
       unsubMaint();
       unsubCountdown();
@@ -570,6 +659,51 @@ export default function Admin() {
     }
   };
 
+  // Tambah & Padam Rekod Aktiviti JPP (jpp_activities)
+  const handleAddJppActivity = async (e) => {
+    e.preventDefault();
+    if (!newActivity.title.trim() || !newActivity.dateStr) return;
+    try {
+      await addDoc(collection(db, "jpp_activities"), {
+        title: newActivity.title.trim(),
+        dateStr: newActivity.dateStr,
+        category: newActivity.category || "Akademik",
+        location: newActivity.location.trim(),
+        participants: newActivity.participants.trim(),
+        description: newActivity.description.trim(),
+        image: newActivity.image
+          ? convertGoogleDriveImageUrl(newActivity.image)
+          : "",
+        reportUrl: newActivity.reportUrl.trim(),
+        createdAtMs: Date.now(),
+      });
+      await recordLog("Tambah Aktiviti JPP", newActivity.title.trim());
+      setNewActivity({
+        title: "",
+        dateStr: "",
+        category: "Akademik",
+        location: "",
+        participants: "",
+        description: "",
+        image: "",
+        reportUrl: "",
+      });
+      showToast("Rekod aktiviti JPP telah ditambah.");
+    } catch (err) {
+      showToast(`Gagal menambah aktiviti JPP: ${err.message}`);
+    }
+  };
+
+  const handleDeleteJppActivity = async (id, title) => {
+    try {
+      await deleteDoc(doc(db, "jpp_activities", id));
+      await recordLog("Padam Aktiviti JPP", title);
+      showToast("Rekod aktiviti JPP telah dipadam.");
+    } catch (err) {
+      showToast(`Gagal memadam aktiviti JPP: ${err.message}`);
+    }
+  };
+
   // Tambah / Kemas kini akses Exco atau Admin
   const handleSaveExcoUser = async (e) => {
     e.preventDefault();
@@ -664,14 +798,22 @@ export default function Admin() {
   const canAccessTab = (tabId) => {
     if (isDeveloper) return true;
     if (role === "admin") {
-      return tabId === "kafe_timeline" || tabId === "galeri" || tabId === "logs";
+      return (
+        tabId === "kafe_timeline" ||
+        tabId === "galeri" ||
+        tabId === "aktiviti" ||
+        tabId === "logs"
+      );
     }
     if (role === "exco") {
-      return (
-        tabId !== "exco_users" &&
-        tabId !== "maintenance" &&
-        allowedModules.includes(tabId)
-      );
+      if (tabId === "exco_users" || tabId === "maintenance") return false;
+      if (tabId === "aktiviti") {
+        return (
+          allowedModules.includes("aktiviti") ||
+          allowedModules.includes("galeri")
+        );
+      }
+      return allowedModules.includes(tabId);
     }
     return false;
   };
@@ -1198,7 +1340,7 @@ export default function Admin() {
               </div>
             )}
 
-            {/* TAB 2: GALERI */}
+            {/* TAB 2: GALERI ALBUM (galeri_events SAHAJA) */}
             {activeTab === "galeri" && (
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <form
@@ -1369,6 +1511,226 @@ export default function Admin() {
               </div>
             )}
 
+            {/* TAB BAHARU: JEJAK AKTIVITI JPP (jpp_activities SAHAJA) */}
+            {activeTab === "aktiviti" && (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <form
+                  onSubmit={handleAddJppActivity}
+                  className="lg:col-span-5 bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-3 h-fit"
+                >
+                  <h2 className="text-lg font-bold text-[#1f1d6b] border-b-2 border-cyan-500 pb-2">
+                    Tambah Rekod Aktiviti JPP
+                  </h2>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Nama Program / Aktiviti JPP"
+                    value={newActivity.title}
+                    onChange={(e) =>
+                      setNewActivity({ ...newActivity, title: e.target.value })
+                    }
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs sm:text-sm"
+                  />
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-gray-600 mb-1">
+                        Tarikh Program:
+                      </label>
+                      <input
+                        type="date"
+                        required
+                        value={newActivity.dateStr}
+                        onChange={(e) =>
+                          setNewActivity({
+                            ...newActivity,
+                            dateStr: e.target.value,
+                          })
+                        }
+                        className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-semibold text-gray-600 mb-1">
+                        Kategori:
+                      </label>
+                      <select
+                        value={newActivity.category}
+                        onChange={(e) =>
+                          setNewActivity({
+                            ...newActivity,
+                            category: e.target.value,
+                          })
+                        }
+                        className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs bg-white"
+                      >
+                        <option value="Akademik">Akademik</option>
+                        <option value="Sukan & Kebudayaan">
+                          Sukan &amp; Kebudayaan
+                        </option>
+                        <option value="Kebajikan & Kepimpinan">
+                          Kebajikan &amp; Kepimpinan
+                        </option>
+                        <option value="Kerohanian">Kerohanian</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input
+                      type="text"
+                      required
+                      placeholder="Tempat Program (cth: Dewan Sri Ledang)"
+                      value={newActivity.location}
+                      onChange={(e) =>
+                        setNewActivity({
+                          ...newActivity,
+                          location: e.target.value,
+                        })
+                      }
+                      className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Penyertaan (cth: 450 Pelajar, pilihan)"
+                      value={newActivity.participants}
+                      onChange={(e) =>
+                        setNewActivity({
+                          ...newActivity,
+                          participants: e.target.value,
+                        })
+                      }
+                      className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs"
+                    />
+                  </div>
+
+                  <textarea
+                    rows={3}
+                    required
+                    placeholder="Ringkasan & impak program..."
+                    value={newActivity.description}
+                    onChange={(e) =>
+                      setNewActivity({
+                        ...newActivity,
+                        description: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs sm:text-sm"
+                  />
+
+                  <div className="space-y-2 rounded-xl border border-slate-200 bg-slate-50/70 p-3">
+                    <span className="text-xs font-bold text-[#1f1d6b] block">
+                      Gambar Sorotan (Pilihan, Auto-Compress &lt;= 800px)
+                    </span>
+                    <label className="flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-cyan-300 bg-white hover:bg-cyan-50/50 px-3 py-3 text-center cursor-pointer transition-colors">
+                      <ImageIcon size={18} className="text-cyan-600" />
+                      <span className="text-xs font-semibold text-gray-700">
+                        {isCompressingActivityImg
+                          ? "Memampatkan gambar..."
+                          : "Pilih gambar sorotan aktiviti"}
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleActivityFileChange}
+                        className="hidden"
+                      />
+                    </label>
+                    {newActivity.image && (
+                      <div className="relative rounded-xl overflow-hidden border border-slate-200 aspect-[4/2]">
+                        <img
+                          src={newActivity.image}
+                          alt="Pratonton Aktiviti"
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setNewActivity((prev) => ({ ...prev, image: "" }))
+                          }
+                          className="absolute top-2 right-2 bg-black/60 hover:bg-red-600 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full cursor-pointer"
+                        >
+                          Buang
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <input
+                    type="url"
+                    placeholder="Pautan Album / Laporan Google Drive (pilihan)"
+                    value={newActivity.reportUrl}
+                    onChange={(e) =>
+                      setNewActivity({
+                        ...newActivity,
+                        reportUrl: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs sm:text-sm"
+                  />
+
+                  <button
+                    type="submit"
+                    className="inline-flex items-center gap-1.5 bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-colors cursor-pointer"
+                  >
+                    <Plus size={15} />
+                    <span>Simpan Aktiviti JPP</span>
+                  </button>
+                </form>
+
+                <div className="lg:col-span-7 space-y-3">
+                  <h2 className="text-lg font-bold text-[#1f1d6b] border-b-2 border-cyan-500 pb-2">
+                    Senarai Rekod Aktiviti JPP ({jppActivities.length})
+                  </h2>
+                  {jppActivities.length === 0 ? (
+                    <div className="bg-white rounded-2xl border border-slate-200 p-6 text-xs sm:text-sm text-gray-500">
+                      Tiada rekod dalam <code>jpp_activities</code>. Laman Utama
+                      memaparkan 3 aktiviti contoh sehingga rekod baharu
+                      ditambah.
+                    </div>
+                  ) : (
+                    jppActivities.map((act) => (
+                      <div
+                        key={act.id}
+                        className="bg-white rounded-2xl border border-slate-200 p-4 flex items-start justify-between gap-4"
+                      >
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase text-cyan-700">
+                            <span>{act.dateStr}</span>
+                            <span>•</span>
+                            <span>{act.category}</span>
+                            {act.location && (
+                              <>
+                                <span>•</span>
+                                <span className="text-gray-500">
+                                  {act.location}
+                                </span>
+                              </>
+                            )}
+                          </div>
+                          <h4 className="font-bold text-sm text-[#1f1d6b] mt-0.5">
+                            {act.title}
+                          </h4>
+                          <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                            {act.description}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() =>
+                            handleDeleteJppActivity(act.id, act.title)
+                          }
+                          aria-label="Padam aktiviti JPP"
+                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer shrink-0"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* TAB 3: PENGURUSAN E-MEL EXCO */}
             {activeTab === "exco_users" && isDeveloper && (
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -1516,8 +1878,9 @@ export default function Admin() {
               </div>
             )}
 
-            {/* TAB 4: SUIS PENYELENGGARAAN & COUNTDOWN PSPM */}
+            {/* TAB 4: SUIS PENYELENGGARAAN, COUNTDOWN PSPM & PEMANTAU KUOTA */}
             {activeTab === "maintenance" && isDeveloper && (
+              <div className="space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
               <form
                 onSubmit={handleSaveMaintenance}
@@ -1646,6 +2009,188 @@ export default function Admin() {
                   <span>Simpan Countdown PSPM</span>
                 </button>
               </form>
+              </div>
+
+              {/* Widget Khas Developer: Pemantau Saiz Dokumen & Kuota Firestore */}
+              {(() => {
+                const collectionsSummary = [
+                  {
+                    name: "galeri_events",
+                    label: "Galeri KMK",
+                    docs: galeriItems,
+                  },
+                  {
+                    name: "liveboard_kafe",
+                    label: "Status Kafe",
+                    docs: kafeList,
+                  },
+                  {
+                    name: "liveboard_timeline",
+                    label: "Timeline Live Board",
+                    docs: timelineList,
+                  },
+                  {
+                    name: "admin_users",
+                    label: "Pengguna Admin/Exco",
+                    docs: excoUsers,
+                  },
+                  {
+                    name: "audit_logs",
+                    label: "Log Aktiviti",
+                    docs: activityLogs,
+                  },
+                ].map((col) => {
+                  const bytes = col.docs.reduce(
+                    (sum, item) => sum + calculateBytes(item),
+                    0
+                  );
+                  return {
+                    ...col,
+                    count: col.docs.length,
+                    bytes,
+                  };
+                });
+
+                const totalDocs = collectionsSummary.reduce(
+                  (sum, c) => sum + c.count,
+                  0
+                );
+                const totalBytes = collectionsSummary.reduce(
+                  (sum, c) => sum + c.bytes,
+                  0
+                );
+
+                return (
+                  <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-cyan-500 pb-3">
+                      <div>
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-cyan-700">
+                          Diagnostik Pangkalan Data (Developer)
+                        </span>
+                        <h2 className="text-lg sm:text-xl font-extrabold text-[#1f1d6b]">
+                          Pemantau Saiz Dokumen &amp; Kuota Firestore
+                        </h2>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <div className="rounded-xl bg-indigo-50 border border-indigo-100 px-4 py-2 text-center">
+                          <span className="block text-[10px] font-bold uppercase text-gray-500">
+                            Jumlah Dokumen
+                          </span>
+                          <span className="text-lg font-extrabold text-[#1f1d6b]">
+                            {totalDocs}
+                          </span>
+                        </div>
+                        <div className="rounded-xl bg-cyan-50 border border-cyan-200 px-4 py-2 text-center">
+                          <span className="block text-[10px] font-bold uppercase text-cyan-800">
+                            Saiz Keseluruhan
+                          </span>
+                          <span className="text-lg font-extrabold text-cyan-700">
+                            {formatBytes(totalBytes)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Ringkasan Mengikut Koleksi */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                      {collectionsSummary.map((col) => (
+                        <div
+                          key={col.name}
+                          className="rounded-xl border border-slate-200 bg-slate-50/70 p-3.5"
+                        >
+                          <span className="text-[10px] font-mono font-bold text-cyan-700 block truncate">
+                            {col.name}
+                          </span>
+                          <h4 className="text-xs font-bold text-gray-800 mt-0.5">
+                            {col.label}
+                          </h4>
+                          <div className="mt-2 flex items-baseline justify-between text-xs">
+                            <span className="text-gray-500">
+                              {col.count} dokumen
+                            </span>
+                            <span className="font-extrabold text-[#1f1d6b]">
+                              {formatBytes(col.bytes)}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Senarai Pemeriksa Had 1 MB untuk galeri_events */}
+                    <div className="space-y-3 pt-2 border-t border-slate-100">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-extrabold text-[#1f1d6b]">
+                          Pemeriksa Had 1 MB Dokumen (<code>galeri_events</code>)
+                        </h3>
+                        <span className="text-[11px] text-gray-500">
+                          Had Maksimum Firestore: 1,048,576 B (1.00 MB) / dokumen
+                        </span>
+                      </div>
+
+                      {galeriItems.length === 0 ? (
+                        <p className="text-xs text-gray-500 bg-slate-50 rounded-xl p-4 border border-slate-200">
+                          Tiada dokumen dalam koleksi <code>galeri_events</code>{" "}
+                          buat masa ini.
+                        </p>
+                      ) : (
+                        <div className="space-y-2.5">
+                          {galeriItems.map((item) => {
+                            const bytes = calculateBytes(item);
+                            const kbText = `${(bytes / 1024).toFixed(2)} KB`;
+                            const pct = Math.min(
+                              100,
+                              (bytes / FIRESTORE_DOC_LIMIT_BYTES) * 100
+                            );
+                            const pctText = `${pct.toFixed(1)}%`;
+                            const isHigh = pct > 75;
+                            const isMedium = pct >= 50 && pct <= 75;
+                            const barColor = isHigh
+                              ? "bg-red-500"
+                              : isMedium
+                              ? "bg-amber-500"
+                              : "bg-emerald-500";
+
+                            return (
+                              <div
+                                key={item.id}
+                                className={`rounded-xl border p-3.5 space-y-2 ${
+                                  isHigh
+                                    ? "bg-red-50/70 border-red-200"
+                                    : "bg-slate-50/60 border-slate-200"
+                                }`}
+                              >
+                                <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                                  <div className="flex items-center gap-2 min-w-0">
+                                    <span className="font-bold text-gray-900 truncate">
+                                      {item.tajuk || item.id}
+                                    </span>
+                                    {isHigh && (
+                                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-red-100 text-red-700 border border-red-300">
+                                        Amaran: Menghampiri Had 1MB Firestore
+                                      </span>
+                                    )}
+                                  </div>
+                                  <span className="font-mono font-bold text-[#1f1d6b] shrink-0">
+                                    {kbText} ({pctText})
+                                  </span>
+                                </div>
+
+                                <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+                                  <div
+                                    style={{ width: `${pct}%` }}
+                                    className={`h-full rounded-full transition-all duration-300 ${barColor}`}
+                                  />
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
               </div>
             )}
 

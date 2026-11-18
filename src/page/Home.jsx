@@ -23,6 +23,8 @@ import {
   Radio,
   CheckCircle2,
   AlertTriangle,
+  MapPin,
+  Calendar,
 } from "lucide-react";
 import { useNavigate } from "react-router";
 import { collection, doc, onSnapshot } from "firebase/firestore";
@@ -286,6 +288,71 @@ export default function App() {
   ];
 
   const [galeriList, setGaleriList] = useState(DEFAULT_GALERI_LIST);
+
+  const DEFAULT_JPP_ACTIVITIES = [
+    {
+      id: "act_1",
+      title: "Minggu Haluan Pelajar & Suai Kenal Sesi 2026/2027",
+      dateStr: "2026-10-14",
+      category: "Kebajikan & Kepimpinan",
+      location: "Dewan Sri Ledang, KMK",
+      participants: "1,200 Pelajar",
+      description:
+        "Program orientasi bersepadu bagi menyambut pelajar baharu, memperkenalkan budaya akademik kolej serta barisan kepimpinan JPP KMK.",
+      image:
+        "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1000&auto=format&fit=crop",
+      reportUrl: "https://drive.google.com/",
+    },
+    {
+      id: "act_2",
+      title: "Klinik Pecutan Akhir PSPM & Peer Tutoring",
+      dateStr: "2026-09-28",
+      category: "Akademik",
+      location: "Bilik Kuliah Utama & Perpustakaan KMK",
+      participants: "450 Pelajar",
+      description:
+        "Sesi bimbingan rakan sebaya dan bengkel teknik menjawab soalan peperiksaan bersama pelajar cemerlang dan pensyarah pakar.",
+      image:
+        "https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=1000&auto=format&fit=crop",
+      reportUrl: "https://drive.google.com/",
+    },
+    {
+      id: "act_3",
+      title: "Karnival Sukan Antara Kolej Kediaman (SUKKOM)",
+      dateStr: "2026-08-19",
+      category: "Sukan & Kebudayaan",
+      location: "Kompleks Sukan Kolej Matrikulasi Kedah",
+      participants: "800 Pelajar",
+      description:
+        "Kejohanan sukan tahunan merangkumi bola sepak, bola jaring, badminton dan e-sukan bagi memupuk semangat kesukanan warga kampus.",
+      image:
+        "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=1000&auto=format&fit=crop",
+      reportUrl: "https://drive.google.com/",
+    },
+  ];
+
+  const ACTIVITY_CATEGORIES = [
+    "Semua",
+    "Akademik",
+    "Sukan & Kebudayaan",
+    "Kebajikan & Kepimpinan",
+    "Kerohanian",
+  ];
+
+  const [jppActivities, setJppActivities] = useState(DEFAULT_JPP_ACTIVITIES);
+  const [selectedActivityCat, setSelectedActivityCat] = useState("Semua");
+  const [activeActivityModal, setActiveActivityModal] = useState(null);
+
+  const formatActivityDate = (dateStr) => {
+    if (!dateStr) return "";
+    const parsed = new Date(dateStr);
+    if (Number.isNaN(parsed.getTime())) return dateStr;
+    return parsed.toLocaleDateString("ms-MY", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
   const [kafeMiniList, setKafeMiniList] = useState(DEFAULT_KAFE_LIST);
   const [tickerItems, setTickerItems] = useState([
     {
@@ -440,11 +507,35 @@ export default function App() {
       handleListenerError
     );
 
+    const unsubActivities = onSnapshot(
+      collection(db, "jpp_activities"),
+      (snapshot) => {
+        if (!snapshot.empty) {
+          const docs = snapshot.docs.map((docSnap) => ({
+            id: docSnap.id,
+            ...docSnap.data(),
+          }));
+          docs.sort((a, b) => {
+            const cmp = String(b.dateStr || "").localeCompare(
+              String(a.dateStr || "")
+            );
+            if (cmp !== 0) return cmp;
+            return (b.createdAtMs || 0) - (a.createdAtMs || 0);
+          });
+          setJppActivities(docs);
+        } else {
+          setJppActivities(DEFAULT_JPP_ACTIVITIES);
+        }
+      },
+      handleListenerError
+    );
+
     return () => {
       unsubGaleri();
       unsubTimeline();
       unsubKafe();
       unsubCountdown();
+      unsubActivities();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -1112,6 +1203,129 @@ export default function App() {
           </div>
         </section>
 
+        {/* Seksyen Jejak Aktiviti JPP KMK (Vertical Interactive Timeline) */}
+        <RevealOnScroll direction="bottom" delay={120}>
+          <section className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b-2 border-cyan-500 pb-3">
+              <div>
+                <span className="text-[11px] font-bold uppercase tracking-widest text-cyan-700">
+                  Garis Masa Program &amp; Inisiatif
+                </span>
+                <h2 className="text-[#1f1d6b] text-lg sm:text-2xl font-extrabold uppercase tracking-wider mt-0.5">
+                  Jejak Aktiviti JPP KMK
+                </h2>
+              </div>
+
+              {/* Bar Penapis Kategori */}
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+                {ACTIVITY_CATEGORIES.map((cat) => {
+                  const isSelected = selectedActivityCat === cat;
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedActivityCat(cat)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${
+                        isSelected
+                          ? "bg-[#1f1d6b] text-cyan-300 shadow-sm"
+                          : "bg-white text-gray-600 hover:bg-slate-100 border border-slate-200"
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {(() => {
+              const filteredActivities =
+                selectedActivityCat === "Semua"
+                  ? jppActivities
+                  : jppActivities.filter(
+                      (a) => a.category === selectedActivityCat
+                    );
+
+              if (filteredActivities.length === 0) {
+                return (
+                  <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center text-xs sm:text-sm text-gray-500">
+                    Tiada rekod aktiviti untuk kategori{" "}
+                    <strong>{selectedActivityCat}</strong> buat masa ini.
+                  </div>
+                );
+              }
+
+              return (
+                <div className="relative border-l-2 border-[#1f1d6b] ml-3 sm:ml-5 pl-6 sm:pl-8 space-y-6">
+                  {filteredActivities.map((act) => (
+                    <div key={act.id} className="relative group">
+                      {/* Titik Nod Cyan */}
+                      <span className="absolute -left-[31px] sm:-left-[39px] top-5 h-4 w-4 rounded-full bg-cyan-400 border-4 border-[#1f1d6b] shadow-sm transition-transform duration-300 group-hover:scale-125" />
+
+                      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-md transition-shadow p-5 sm:p-6 flex flex-col md:flex-row gap-5 items-start">
+                        {act.image && (
+                          <div className="w-full md:w-48 aspect-[4/2] md:aspect-[4/3] rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200/60">
+                            <img
+                              src={resolveGaleriImage(act.image)}
+                              alt={act.title}
+                              className="w-full h-full object-cover transition-transform duration-500 ease-editorial group-hover:scale-[1.03]"
+                            />
+                          </div>
+                        )}
+
+                        <div className="flex-1 min-w-0 space-y-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#1f1d6b] bg-indigo-50 border border-indigo-100 px-2.5 py-0.5 rounded-full">
+                              <Calendar size={11} />
+                              <span>{formatActivityDate(act.dateStr)}</span>
+                            </span>
+                            {act.category && (
+                              <span className="inline-flex items-center text-[11px] font-semibold text-cyan-800 bg-cyan-50 border border-cyan-200 px-2.5 py-0.5 rounded-full">
+                                {act.category}
+                              </span>
+                            )}
+                            {act.participants && (
+                              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-gray-600 bg-slate-100 px-2.5 py-0.5 rounded-full">
+                                <Users size={11} />
+                                <span>{act.participants}</span>
+                              </span>
+                            )}
+                          </div>
+
+                          <h3 className="text-base sm:text-lg font-extrabold text-[#1f1d6b] leading-snug">
+                            {act.title}
+                          </h3>
+
+                          {act.location && (
+                            <p className="text-xs font-medium text-gray-500 flex items-center gap-1.5">
+                              <MapPin size={13} className="text-cyan-600 shrink-0" />
+                              <span>{act.location}</span>
+                            </p>
+                          )}
+
+                          <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 leading-relaxed">
+                            {act.description}
+                          </p>
+
+                          <div className="pt-2">
+                            <button
+                              type="button"
+                              onClick={() => setActiveActivityModal(act)}
+                              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#1f1d6b] hover:text-cyan-600 transition-colors cursor-pointer"
+                            >
+                              <span>Lihat Butiran / Laporan</span>
+                              <ArrowRight size={14} />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+          </section>
+        </RevealOnScroll>
+
         {/* Seksyen Hab Pelajar KMK (3 Kolum) */}
         <RevealOnScroll direction="bottom" delay={150}>
           <section className="space-y-6">
@@ -1352,6 +1566,104 @@ export default function App() {
           </div>
         </footer>
       </RevealOnScroll>
+
+      {/* Modal Butiran Aktiviti JPP */}
+      {activeActivityModal && (
+        <div
+          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setActiveActivityModal(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {activeActivityModal.image && (
+              <div className="relative aspect-[4/2] w-full bg-slate-100">
+                <img
+                  src={resolveGaleriImage(activeActivityModal.image)}
+                  alt={activeActivityModal.title}
+                  className="w-full h-full object-cover"
+                />
+                <button
+                  onClick={() => setActiveActivityModal(null)}
+                  aria-label="Tutup modal"
+                  className="absolute top-3 right-3 bg-black/60 hover:bg-black/80 text-white p-1.5 rounded-full cursor-pointer"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            )}
+
+            <div className="p-6 space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[11px] font-bold text-[#1f1d6b] bg-indigo-50 border border-indigo-100 px-2.5 py-0.5 rounded-full">
+                    {formatActivityDate(activeActivityModal.dateStr)}
+                  </span>
+                  <span className="text-[11px] font-semibold text-cyan-800 bg-cyan-50 border border-cyan-200 px-2.5 py-0.5 rounded-full">
+                    {activeActivityModal.category}
+                  </span>
+                </div>
+                {!activeActivityModal.image && (
+                  <button
+                    onClick={() => setActiveActivityModal(null)}
+                    aria-label="Tutup modal"
+                    className="p-1 rounded-lg text-gray-500 hover:bg-slate-100 cursor-pointer"
+                  >
+                    <X size={18} />
+                  </button>
+                )}
+              </div>
+
+              <h3 className="text-lg sm:text-xl font-extrabold text-[#1f1d6b] leading-snug">
+                {activeActivityModal.title}
+              </h3>
+
+              <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500">
+                {activeActivityModal.location && (
+                  <span className="inline-flex items-center gap-1">
+                    <MapPin size={13} className="text-cyan-600" />
+                    <span>{activeActivityModal.location}</span>
+                  </span>
+                )}
+                {activeActivityModal.participants && (
+                  <span className="inline-flex items-center gap-1">
+                    <Users size={13} className="text-cyan-600" />
+                    <span>{activeActivityModal.participants}</span>
+                  </span>
+                )}
+              </div>
+
+              <p className="text-xs sm:text-sm text-gray-700 leading-relaxed pt-1">
+                {activeActivityModal.description}
+              </p>
+
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-2.5">
+                {activeActivityModal.reportUrl && (
+                  <a
+                    href={activeActivityModal.reportUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 bg-[#1f1d6b] hover:bg-indigo-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-colors"
+                  >
+                    <span>Buka Album / Laporan Penuh</span>
+                    <ExternalLink size={14} />
+                  </a>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setActiveActivityModal(null)}
+                  className="bg-slate-100 hover:bg-slate-200 text-gray-700 text-xs font-bold px-4 py-2.5 rounded-xl transition-colors cursor-pointer"
+                >
+                  Tutup
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Butang Aksesibiliti */}
       <div className="fixed bottom-4 left-4 z-40">
