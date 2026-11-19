@@ -623,7 +623,10 @@ export default function Admin() {
   // Tambah item Galeri
   const handleAddGaleri = async (e) => {
     e.preventDefault();
-    if (!newGaleri.tajuk.trim()) return;
+    if (!newGaleri.tajuk.trim()) {
+      showToast("Sila masukkan tajuk program.");
+      return;
+    }
     if (!newGaleri.image.trim()) {
       showToast("Sila muat naik gambar atau masukkan pautan gambar terlebih dahulu.");
       return;
@@ -632,7 +635,10 @@ export default function Admin() {
       const finalImage = convertGoogleDriveImageUrl(newGaleri.image);
       await addDoc(collection(db, "galeri_events"), {
         ...newGaleri,
+        tajuk: newGaleri.tajuk.trim(),
         image: finalImage,
+        // Pautan Google Drive adalah pilihan; simpan "" jika tidak diisi
+        driveLink: (newGaleri.driveLink || "").trim(),
         createdAtMs: Date.now(),
       });
       await recordLog("Tambah Galeri KMK", newGaleri.tajuk.trim());
@@ -1441,10 +1447,16 @@ export default function Admin() {
                       </div>
                     )}
                   </div>
+                  <label
+                    htmlFor="galeri-drive-link"
+                    className="block text-xs font-semibold text-gray-600 -mb-1"
+                  >
+                    Pautan Album Google Drive (Pilihan)
+                  </label>
                   <input
+                    id="galeri-drive-link"
                     type="url"
-                    required
-                    placeholder="Pautan Folder Google Drive (https://drive.google.com/...)"
+                    placeholder="https://drive.google.com/... (boleh dibiarkan kosong)"
                     value={newGaleri.driveLink}
                     onChange={(e) =>
                       setNewGaleri({ ...newGaleri, driveLink: e.target.value })
@@ -1493,7 +1505,7 @@ export default function Admin() {
                             {item.tajuk}
                           </h4>
                           <p className="text-xs text-gray-500 truncate">
-                            {item.driveLink}
+                            {item.driveLink || item.driveUrl || item.link || "Tiada pautan Google Drive"}
                           </p>
                         </div>
                         <button
