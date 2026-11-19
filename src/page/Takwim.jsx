@@ -403,82 +403,82 @@ const PHASE_JUMPS = [
 
 const ORG_THEMES = {
   JPP: {
-    aurora: "bg-cyan-500/20",
-    auroraSecondary: "bg-indigo-600/25",
+    aurora: "bg-cyan-500/10",
+    auroraSecondary: "bg-indigo-600/12",
     accentText: "text-cyan-300",
     badge: "bg-cyan-500/15 text-cyan-200 border-cyan-400/40",
     borderActive: "border-cyan-400/70",
-    shadow: "0 0 36px -6px rgba(34, 211, 238, 0.45)",
+    shadow: "0 0 24px -6px rgba(34, 211, 238, 0.22)",
     beam: "#22d3ee",
     nodeBg: "bg-cyan-400",
   },
   PRD: {
-    aurora: "bg-rose-500/20",
-    auroraSecondary: "bg-fuchsia-600/20",
+    aurora: "bg-rose-500/10",
+    auroraSecondary: "bg-fuchsia-600/10",
     accentText: "text-rose-300",
     badge: "bg-rose-500/15 text-rose-200 border-rose-400/40",
     borderActive: "border-rose-400/70",
-    shadow: "0 0 36px -6px rgba(244, 63, 94, 0.45)",
+    shadow: "0 0 24px -6px rgba(244, 63, 94, 0.22)",
     beam: "#fb7185",
     nodeBg: "bg-rose-400",
   },
   KKA: {
-    aurora: "bg-violet-500/20",
-    auroraSecondary: "bg-indigo-500/25",
+    aurora: "bg-violet-500/10",
+    auroraSecondary: "bg-indigo-500/12",
     accentText: "text-violet-300",
     badge: "bg-violet-500/15 text-violet-200 border-violet-400/40",
     borderActive: "border-violet-400/70",
-    shadow: "0 0 36px -6px rgba(139, 92, 246, 0.45)",
+    shadow: "0 0 24px -6px rgba(139, 92, 246, 0.22)",
     beam: "#a78bfa",
     nodeBg: "bg-violet-400",
   },
   KRS: {
-    aurora: "bg-amber-500/20",
-    auroraSecondary: "bg-orange-600/20",
+    aurora: "bg-amber-500/10",
+    auroraSecondary: "bg-orange-600/10",
     accentText: "text-amber-300",
     badge: "bg-amber-500/15 text-amber-200 border-amber-400/40",
     borderActive: "border-amber-400/70",
-    shadow: "0 0 36px -6px rgba(245, 158, 11, 0.45)",
+    shadow: "0 0 24px -6px rgba(245, 158, 11, 0.22)",
     beam: "#fbbf24",
     nodeBg: "bg-amber-400",
   },
   SIC: {
-    aurora: "bg-emerald-500/20",
-    auroraSecondary: "bg-teal-600/20",
+    aurora: "bg-emerald-500/10",
+    auroraSecondary: "bg-teal-600/10",
     accentText: "text-emerald-300",
     badge: "bg-emerald-500/15 text-emerald-200 border-emerald-400/40",
     borderActive: "border-emerald-400/70",
-    shadow: "0 0 36px -6px rgba(16, 185, 129, 0.45)",
+    shadow: "0 0 24px -6px rgba(16, 185, 129, 0.22)",
     beam: "#34d399",
     nodeBg: "bg-emerald-400",
   },
   JKK: {
-    aurora: "bg-teal-500/20",
-    auroraSecondary: "bg-cyan-600/20",
+    aurora: "bg-teal-500/10",
+    auroraSecondary: "bg-cyan-600/10",
     accentText: "text-teal-300",
     badge: "bg-teal-500/15 text-teal-200 border-teal-400/40",
     borderActive: "border-teal-400/70",
-    shadow: "0 0 36px -6px rgba(20, 184, 166, 0.45)",
+    shadow: "0 0 24px -6px rgba(20, 184, 166, 0.22)",
     beam: "#2dd4bf",
     nodeBg: "bg-teal-400",
   },
   KRP: {
-    aurora: "bg-sky-500/20",
-    auroraSecondary: "bg-blue-600/20",
+    aurora: "bg-sky-500/10",
+    auroraSecondary: "bg-blue-600/10",
     accentText: "text-sky-300",
     badge: "bg-sky-500/15 text-sky-200 border-sky-400/40",
     borderActive: "border-sky-400/70",
-    shadow: "0 0 36px -6px rgba(56, 189, 248, 0.45)",
+    shadow: "0 0 24px -6px rgba(56, 189, 248, 0.22)",
     beam: "#38bdf8",
     nodeBg: "bg-sky-400",
   },
   KMK: {
-    aurora: "bg-blue-500/20",
-    auroraSecondary: "bg-indigo-600/25",
+    aurora: "bg-blue-500/10",
+    auroraSecondary: "bg-indigo-600/12",
     accentText: "text-blue-300",
     badge: "bg-blue-500/15 text-blue-200 border-blue-400/40",
     borderActive: "border-blue-400/70",
-    shadow: "0 0 36px -6px rgba(59, 130, 246, 0.45)",
+    shadow: "0 0 24px -6px rgba(59, 130, 246, 0.22)",
     beam: "#60a5fa",
     nodeBg: "bg-blue-400",
   },
@@ -490,16 +490,7 @@ export default function Takwim() {
   const [selectedOrg, setSelectedOrg] = useState("Semua");
   const [activeIndex, setActiveIndex] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [scrollY, setScrollY] = useState(0);
   const [autoPlay, setAutoPlay] = useState(false);
-
-  // Cursor spotlight coordinates
-  const [spotlight, setSpotlight] = useState({ x: -999, y: -999 });
-  const spotlightRafRef = useRef(null);
-
-  // 3D tilt state for sticky holographic stage
-  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
-  const stageRef = useRef(null);
 
   // Flowchart container, card refs, and SVG S-curve geometry
   const flowContainerRef = useRef(null);
@@ -606,8 +597,6 @@ export default function Takwim() {
 
     const handleScrollUpdate = () => {
       rafId = null;
-      const currentScrollY = window.scrollY;
-      setScrollY(currentScrollY);
 
       const container = flowContainerRef.current;
       if (!container) return;
@@ -650,32 +639,6 @@ export default function Takwim() {
       if (rafId !== null) cancelAnimationFrame(rafId);
     };
   }, [filteredStations]);
-
-  // Cursor spotlight handler
-  const handleCanvasMouseMove = (e) => {
-    const clientX = e.clientX;
-    const clientY = e.clientY;
-    if (spotlightRafRef.current) return;
-    spotlightRafRef.current = requestAnimationFrame(() => {
-      setSpotlight({ x: clientX, y: clientY });
-      spotlightRafRef.current = null;
-    });
-  };
-
-  // 3D-Tilt handler for sticky holographic stage
-  const handleStageMouseMove = (e) => {
-    const el = stageRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    setTilt({
-      rotateX: Number((-y * 10).toFixed(2)),
-      rotateY: Number((x * 12).toFixed(2)),
-    });
-  };
-
-  const resetTilt = () => setTilt({ rotateX: 0, rotateY: 0 });
 
   // Scroll to specific station index
   const scrollToStation = useCallback((idx) => {
@@ -736,56 +699,7 @@ export default function Takwim() {
   );
 
   return (
-    <div
-      onMouseMove={handleCanvasMouseMove}
-      className="bg-[#050811] min-h-screen text-slate-100 relative overflow-x-hidden selection:bg-cyan-500 selection:text-slate-950"
-    >
-      {/* Corak Titik Grid Halus */}
-      <div
-        aria-hidden="true"
-        className="fixed inset-0 pointer-events-none bg-[radial-gradient(rgba(148,163,184,0.14)_1px,transparent_1px)] [background-size:24px_24px] z-0"
-      />
-
-      {/* Cursor Spotlight */}
-      <div
-        aria-hidden="true"
-        className="fixed inset-0 pointer-events-none z-0 transition-opacity duration-300"
-        style={{
-          background: `radial-gradient(520px circle at ${spotlight.x}px ${spotlight.y}px, rgba(34, 211, 238, 0.11), transparent 70%)`,
-        }}
-      />
-
-      {/* Dynamic Aurora Ambient Glow */}
-      <div
-        aria-hidden="true"
-        className="fixed inset-0 pointer-events-none overflow-hidden z-0"
-      >
-        <div
-          className={`absolute -top-40 -left-32 w-[34rem] h-[34rem] rounded-full blur-[130px] transition-colors duration-700 ${activeTheme.aurora}`}
-        />
-        <div
-          className={`absolute bottom-0 right-0 w-[30rem] h-[30rem] rounded-full blur-[130px] transition-colors duration-700 ${activeTheme.auroraSecondary}`}
-        />
-      </div>
-
-      {/* Parallax Watermark Typography Layer */}
-      <div
-        aria-hidden="true"
-        className="fixed inset-0 pointer-events-none select-none overflow-hidden z-0 flex flex-col justify-around opacity-[0.045]"
-        style={{
-          transform: `translate3d(0, ${-(scrollY * 0.14)}px, 0)`,
-        }}
-      >
-        {PHASE_JUMPS.map((p) => (
-          <div
-            key={p.key}
-            className="text-[14vw] font-black tracking-tighter leading-none whitespace-nowrap text-white uppercase pl-6"
-          >
-            {p.watermark}
-          </div>
-        ))}
-      </div>
-
+    <div className="bg-[#050811] min-h-screen text-slate-100 relative overflow-x-hidden selection:bg-cyan-500 selection:text-slate-950">
       {/* Sticky Top Navigation */}
       <nav className="sticky top-0 z-50 bg-[#050811]/85 backdrop-blur-xl border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-3">
@@ -912,17 +826,10 @@ export default function Takwim() {
       {/* Main 2-Column Scrollytelling Area */}
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-28">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
-          {/* KOLUM KIRI: Scrollytelling Sticky Stage 3D-Tilt */}
+          {/* KOLUM KIRI: Scrollytelling Sticky Stage */}
           <aside className="lg:col-span-5 lg:sticky lg:top-24 h-fit">
             <div
-              ref={stageRef}
-              onMouseMove={handleStageMouseMove}
-              onMouseLeave={resetTilt}
-              style={{
-                transform: `perspective(1000px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
-                boxShadow: activeTheme.shadow,
-              }}
-              className={`relative rounded-3xl bg-gradient-to-br from-slate-900/95 via-[#0d1326]/95 to-slate-950/95 border p-6 sm:p-8 backdrop-blur-xl transition-[transform,border-color,box-shadow] duration-300 ease-out ${activeTheme.borderActive}`}
+              className={`relative rounded-3xl bg-slate-900/95 border p-6 sm:p-8 transition-colors duration-300 ${activeTheme.borderActive}`}
             >
               {/* Holographic Top Accent Line */}
               <div className="absolute inset-x-6 top-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-80" />
@@ -1018,37 +925,27 @@ export default function Takwim() {
                 height={svgData.height}
                 className="absolute inset-0 pointer-events-none z-0 overflow-visible"
               >
-                <defs>
-                  <filter id="laserGlow">
-                    <feGaussianBlur stdDeviation="3.5" result="coloredBlur" />
-                    <feMerge>
-                      <feMergeNode in="coloredBlur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
-                </defs>
                 {/* Laluan Asas Malap */}
                 <path
                   d={svgData.d}
                   fill="none"
-                  stroke="rgba(148, 163, 184, 0.22)"
-                  strokeWidth="3"
+                  stroke="rgba(148, 163, 184, 0.16)"
+                  strokeWidth="2"
                   strokeDasharray="6 6"
                 />
-                {/* Garisan Tenaga Bercahaya (Scroll Scrubbing) */}
+                {/* Garisan Kemajuan Skrol */}
                 <path
                   ref={svgPathRef}
                   d={svgData.d}
                   fill="none"
                   stroke={activeTheme.beam}
-                  strokeWidth="3.5"
+                  strokeWidth="2.5"
                   strokeLinecap="round"
-                  filter="url(#laserGlow)"
                   style={{
                     strokeDasharray: svgData.length,
                     strokeDashoffset:
                       svgData.length * (1 - Math.max(0.02, scrollProgress)),
-                    transition: "stroke 500ms ease",
+                    transition: "stroke 300ms ease",
                   }}
                 />
               </svg>
@@ -1096,13 +993,10 @@ export default function Takwim() {
                             scrollToStation(idx);
                           }
                         }}
-                        style={{
-                          boxShadow: isActive ? theme.shadow : "none",
-                        }}
-                        className={`relative w-full sm:w-[78%] rounded-2xl border p-5 backdrop-blur-md cursor-pointer transition-all duration-500 ${
+                        className={`relative w-full sm:w-[78%] rounded-2xl border p-5 cursor-pointer transition-colors duration-300 ${
                           isActive
-                            ? `bg-slate-900/90 opacity-100 scale-100 ${theme.borderActive}`
-                            : "bg-slate-900/50 border-white/10 opacity-35 scale-[0.95] hover:opacity-75"
+                            ? `bg-slate-900 opacity-100 ${theme.borderActive}`
+                            : "bg-slate-900/75 border-white/10 opacity-85 hover:opacity-100"
                         }`}
                       >
                         {/* Titik Nod Bernombor untuk Sambungan SVG */}
@@ -1112,9 +1006,9 @@ export default function Takwim() {
                           }}
                           className={`absolute -top-3.5 ${
                             isOdd ? "left-5 sm:right-5 sm:left-auto" : "left-5"
-                          } w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-mono font-black border-2 transition-all duration-300 ${
+                          } w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-mono font-black border-2 transition-colors duration-300 ${
                             isActive
-                              ? `${theme.nodeBg} text-slate-950 border-white shadow-[0_0_18px_rgba(34,211,238,0.8)] scale-110`
+                              ? `${theme.nodeBg} text-slate-950 border-white`
                               : "bg-slate-800 text-slate-300 border-slate-600"
                           }`}
                         >
