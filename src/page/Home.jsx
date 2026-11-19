@@ -168,6 +168,7 @@ export default function App() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [currentMgmtSlide, setCurrentMgmtSlide] = useState(0);
   const [currentGaleriSlide, setCurrentGaleriSlide] = useState(0);
+  const [galeriPreview, setGaleriPreview] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -176,20 +177,20 @@ export default function App() {
   const slides = [
     {
       id: 0,
-      tabTitle: "Solusi Pendidikan",
-      headline: "Terus Memacu Kecemerlangan",
+      tabTitle: "Wadah Aspirasi Pelajar",
+      headline: "Suara Anda, Amanah Kami",
       description:
-        "Semangat kami terhadap pendidikan berkualiti mendorong kami untuk mencipta ekosistem pembelajaran dinamik demi masa depan anak bangsa.",
+        "",
       link: "/organisasi",
       linkText: "Ketahui lagi",
       image: Banner1,
     },
     {
       id: 1,
-      tabTitle: "Pembangunan Modal Insan",
-      headline: "Sustainable Value Creation",
+      tabTitle: "Kepimpinan & Organisasi",
+      headline: "Memimpin Dengan Integriti, Berkhidmat Dengan Dedikasi",
       description:
-        "Sebagai institusi pra-universiti premier, kami membina sahsiah holistik dan pencapaian akademik berimpak tinggi merentasi sempadan.",
+        "",
       link: "/Cadangan",
       linkText: "Ketahui lagi",
       image: Banner2
@@ -197,23 +198,14 @@ export default function App() {
     },
     {
       id: 2,
-      tabTitle: "Inovasi & Teknologi",
-      headline: "Memacu Digitalisasi Kampus",
+      tabTitle: "Aktiviti dan Aspirasi",
+      headline: "Mencipta pengalaman, Membina Kenangan",
       description:
-        "Mengintegrasikan pembelajaran pintar dan aplikasi digital interaktif bagi memperkasa daya saing warga kolej ke peringkat global.",
+        "",
       link: "/aplikasi",
       linkText: "Terokai portal",
       image: Banner3,
     },
-    {
-      id: 3,
-      tabTitle: "Inovasi",
-      headline: "Memacu Digitalisas",
-      description:
-        "Mengintegrasikan pembelajaran pintar dan aplikasi digital interaktif bagi memperkasa daya saing warga kolej ke peringkat global.",
-      image:
-        "zawir.jpg",
-    }
   ];
 
   const managementList = [
@@ -1052,16 +1044,36 @@ export default function App() {
                 <div className="relative bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden aspect-[4/2] w-full">
                   {galeriList.map((item, idx) => {
                     const isSelected = idx === currentGaleriSlide;
+                    const driveHref = String(
+                      item.driveLink || item.driveUrl || item.link || ""
+                    ).trim();
+                    const hasDrive = driveHref.length > 0;
+                    const CardTag = hasDrive ? "a" : "div";
+                    const cardProps = hasDrive
+                      ? {
+                          href: driveHref,
+                          target: "_blank",
+                          rel: "noopener noreferrer",
+                          "aria-label": `Buka album ${item.tajuk} di Google Drive`,
+                        }
+                      : {
+                          role: "button",
+                          onClick: () => setGaleriPreview(item),
+                          onKeyDown: (e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              setGaleriPreview(item);
+                            }
+                          },
+                          "aria-label": `Pratonton gambar ${item.tajuk}`,
+                        };
                     return (
-                      <a
+                      <CardTag
                         key={item.id}
-                        href={item.driveLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        {...cardProps}
                         tabIndex={isSelected ? 0 : -1}
                         aria-hidden={!isSelected}
-                        aria-label={`Buka album ${item.tajuk} di Google Drive`}
-                        className={`group absolute inset-0 block transition-[transform,opacity] duration-500 ease-editorial motion-reduce:transition-none ${isSelected
+                        className={`group absolute inset-0 block cursor-pointer transition-[transform,opacity] duration-500 ease-editorial motion-reduce:transition-none ${isSelected
                           ? "opacity-100 z-10 translate-x-0 pointer-events-auto"
                           : "opacity-0 z-0 pointer-events-none translate-x-4"
                           }`}
@@ -1072,11 +1084,13 @@ export default function App() {
                           className="w-full h-full object-cover transition-transform duration-500 ease-editorial group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                         />
 
-                        {/* Petunjuk pautan luar di bucu atas kanan */}
-                        <span className="absolute top-3 right-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-black/45 backdrop-blur-md border border-white/25 px-2.5 py-1 text-[10px] sm:text-xs font-semibold text-white group-hover:bg-cyan-500 group-hover:border-cyan-400 transition-colors duration-300 ease-editorial motion-reduce:transition-none">
-                          <span>Lihat Album Penuh</span>
-                          <ExternalLink size={12} />
-                        </span>
+                        {/* Lencana Google Drive (hanya jika pautan wujud) */}
+                        {hasDrive && (
+                          <span className="absolute top-3 right-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-black/45 backdrop-blur-md border border-white/25 px-2.5 py-1 text-[10px] sm:text-xs font-semibold text-white group-hover:bg-cyan-500 group-hover:border-cyan-400 transition-colors duration-300 ease-editorial motion-reduce:transition-none">
+                            <span>Lihat Album Drive</span>
+                            <ExternalLink size={12} />
+                          </span>
+                        )}
 
                         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent p-4 sm:p-6 flex flex-col justify-end">
                           <div className="flex items-center justify-between gap-2 mb-1">
@@ -1094,10 +1108,53 @@ export default function App() {
                             {item.penerangan}
                           </p>
                         </div>
-                      </a>
+                      </CardTag>
                     );
                   })}
                 </div>
+
+                {/* Modal Pratonton Gambar Galeri (item tanpa pautan Drive) */}
+                {galeriPreview && (
+                  <div
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label={`Pratonton ${galeriPreview.tajuk}`}
+                    onClick={() => setGaleriPreview(null)}
+                    className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-sm flex items-center justify-center p-4"
+                  >
+                    <div
+                      onClick={(e) => e.stopPropagation()}
+                      className="relative max-w-4xl w-full"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setGaleriPreview(null)}
+                        aria-label="Tutup pratonton"
+                        className="absolute -top-3 -right-3 z-10 p-2 rounded-full bg-white text-gray-800 shadow-lg hover:bg-cyan-500 hover:text-white transition-colors cursor-pointer"
+                      >
+                        <X size={18} />
+                      </button>
+                      <img
+                        src={resolveGaleriImage(galeriPreview.image)}
+                        alt={galeriPreview.tajuk}
+                        className="w-full max-h-[80vh] object-contain rounded-2xl bg-black"
+                      />
+                      <div className="mt-3 text-white">
+                        <span className="text-[10px] font-bold text-cyan-300 uppercase tracking-widest">
+                          {galeriPreview.kategori}
+                        </span>
+                        <h3 className="text-base sm:text-lg font-bold">
+                          {galeriPreview.tajuk}
+                        </h3>
+                        {galeriPreview.penerangan && (
+                          <p className="text-xs sm:text-sm text-gray-300 mt-1">
+                            {galeriPreview.penerangan}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </RevealOnScroll>
 

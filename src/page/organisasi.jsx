@@ -219,7 +219,7 @@ const OrganizationPage = () => {
       peranan: "Merangka dasar pentadbiran, memimpin hal tuju kepimpinan serta menyelaras hubungan antara mahasiswa dan pengurusan kolej.",
       members: [
         { id: 101, name: "MOHAMAD ZAWIR DANISH BIN MOHAMAD ZARIR", role: "Yang Dipertua", file: "zawir.jpg" },
-        { id: 102, name: "Nur Kamalin Sofea binti Muhd Shahrin", role: "Naib Yang Dipertua", file: "kamalin.jpg" },
+        { id: 102, name: "NUR KAMALIN SOFEA BINTI MUHD SHAHRIN", role: "Naib Yang Dipertua", file: "kamalin.jpg" },
         { id: 103, name: "ZAHRATUL HANA BINTI MOHD ZAINI", role: "Majlis Tertinggi", file: "hana.jpg" },
         { id: 104, name: "LAILATUL BADARIAH BINTI SHARULL IDZHAM", role: "Majlis Tertinggi", file: "laila.jpg" },
         { id: 105, name: "NIK NUR AISYAH BINTI NIK MOHD HAZRUL", role: "Majlis Tertinggi", file: "aisyah.jpg" },
