@@ -223,7 +223,7 @@ const OrganizationPage = () => {
         { id: 103, name: "ZAHRATUL HANA BINTI MOHD ZAINI", role: "Setiausaha Agung", file: "hana.jpg" },
         { id: 104, name: "LAILATUL BADARIAH BINTI SHARULL IDZHAM", role: "Bendahari Kehormat", file: "laila.jpg" },
         { id: 105, name: "NIK NUR AISYAH BINTI NIK MOHD HAZRUL", role: "Setiausaha Agung 1", file: "aisyah.jpg" },
-        { id: 106, name: "MOHAMAD AIDIL AIMAN BIN MUSTAFFA", role: "Setiausaha Agung 2", file: "aiman.png" },
+        { id: 106, name: "MOHAMAD AIDIL AIMAN BIN MUSTAFFA", role: "Setiausaha Agung 2", file: "aiman.jpg" },
       ],
     },
     {
