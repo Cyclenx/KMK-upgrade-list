@@ -42,9 +42,9 @@ import { DEFAULT_KAFE_LIST } from "./LiveBoard";
 // renew gambar dekat sni
 import LogoJppKMK from "../logo kmk jpp.jpeg";
 import QrImage from "../image/sampah ii/qr.jpg";
-import Banner1 from "../image/sampah ii/kmk.jpg";
+import Banner1 from "../image/sampah ii/jppfull.jpg";
 import Banner2 from "../image/sampah ii/revamp.jpg";
-import Banner3 from "../image/sampah ii/students.jpg";
+import Banner3 from "../image/sampah ii/kmk2.jpg";
 
 // Pembantu untuk menyokong laluan gambar tempatan (src/image/...) dan URL luar
 let localImageContext = null;
