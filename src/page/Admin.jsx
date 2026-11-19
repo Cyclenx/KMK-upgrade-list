@@ -633,12 +633,15 @@ export default function Admin() {
     }
     try {
       const finalImage = convertGoogleDriveImageUrl(newGaleri.image);
+      const cleanDriveUrl = (newGaleri.driveLink || "").trim();
       await addDoc(collection(db, "galeri_events"), {
         ...newGaleri,
         tajuk: newGaleri.tajuk.trim(),
         image: finalImage,
         // Pautan Google Drive adalah pilihan; simpan "" jika tidak diisi
-        driveLink: (newGaleri.driveLink || "").trim(),
+        driveLink: cleanDriveUrl,
+        driveUrl: cleanDriveUrl,
+        link: cleanDriveUrl,
         createdAtMs: Date.now(),
       });
       await recordLog("Tambah Galeri KMK", newGaleri.tajuk.trim());

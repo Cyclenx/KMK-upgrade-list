@@ -11,8 +11,6 @@ import {
   Home,
   Users,
   Info,
-  LayoutGrid,
-  ChevronDown,
   Globe,
   Sparkles,
 } from "lucide-react";

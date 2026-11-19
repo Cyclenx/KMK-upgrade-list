@@ -6,8 +6,6 @@ import {
   Info,
   Globe,
   Users,
-  LayoutGrid,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
   ArrowRight,
@@ -177,20 +175,20 @@ export default function App() {
   const slides = [
     {
       id: 0,
-      tabTitle: "Wadah Aspirasi Pelajar",
-      headline: "Wadah Aspirasi Pelajar",
+      tabTitle: "Solusi Pendidikan",
+      headline: "Terus Memacu Kecemerlangan",
       description:
-        "Suara Anda, Amanah Kami",
+        "Semangat kami terhadap pendidikan berkualiti mendorong kami untuk mencipta ekosistem pembelajaran dinamik demi masa depan anak bangsa.",
       link: "/organisasi",
       linkText: "Ketahui lagi",
       image: Banner1,
     },
     {
       id: 1,
-      tabTitle: "Kepimpinan & Organisasi",
-      headline: "Kepimpinan & Organisasi",
+      tabTitle: "Pembangunan Modal Insan",
+      headline: "Sustainable Value Creation",
       description:
-        "Kemimpin Dengan Integriti, Berkhidmat Dengan Dedikasi",
+        "Sebagai institusi pra-universiti premier, kami membina sahsiah holistik dan pencapaian akademik berimpak tinggi merentasi sempadan.",
       link: "/Cadangan",
       linkText: "Ketahui lagi",
       image: Banner2
@@ -198,10 +196,10 @@ export default function App() {
     },
     {
       id: 2,
-      tabTitle: "Aktiviti dan Aspirasi",
-      headline: "Aktiviti dan Aspirasi",
+      tabTitle: "Inovasi & Teknologi",
+      headline: "Memacu Digitalisasi Kampus",
       description:
-        "Mencipta Pengalaman, Membina Kenangan",
+        "Mengintegrasikan pembelajaran pintar dan aplikasi digital interaktif bagi memperkasa daya saing warga kolej ke peringkat global.",
       link: "/aplikasi",
       linkText: "Terokai portal",
       image: Banner3,
@@ -1047,7 +1045,8 @@ export default function App() {
                     const driveHref = String(
                       item.driveLink || item.driveUrl || item.link || ""
                     ).trim();
-                    const hasDrive = driveHref.length > 0;
+                    const hasDrive =
+                      driveHref.length > 0 && driveHref !== "#";
                     const CardTag = hasDrive ? "a" : "div";
                     const cardProps = hasDrive
                       ? {
@@ -1112,49 +1111,6 @@ export default function App() {
                     );
                   })}
                 </div>
-
-                {/* Modal Pratonton Gambar Galeri (item tanpa pautan Drive) */}
-                {galeriPreview && (
-                  <div
-                    role="dialog"
-                    aria-modal="true"
-                    aria-label={`Pratonton ${galeriPreview.tajuk}`}
-                    onClick={() => setGaleriPreview(null)}
-                    className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-sm flex items-center justify-center p-4"
-                  >
-                    <div
-                      onClick={(e) => e.stopPropagation()}
-                      className="relative max-w-4xl w-full"
-                    >
-                      <button
-                        type="button"
-                        onClick={() => setGaleriPreview(null)}
-                        aria-label="Tutup pratonton"
-                        className="absolute -top-3 -right-3 z-10 p-2 rounded-full bg-white text-gray-800 shadow-lg hover:bg-cyan-500 hover:text-white transition-colors cursor-pointer"
-                      >
-                        <X size={18} />
-                      </button>
-                      <img
-                        src={resolveGaleriImage(galeriPreview.image)}
-                        alt={galeriPreview.tajuk}
-                        className="w-full max-h-[80vh] object-contain rounded-2xl bg-black"
-                      />
-                      <div className="mt-3 text-white">
-                        <span className="text-[10px] font-bold text-cyan-300 uppercase tracking-widest">
-                          {galeriPreview.kategori}
-                        </span>
-                        <h3 className="text-base sm:text-lg font-bold">
-                          {galeriPreview.tajuk}
-                        </h3>
-                        {galeriPreview.penerangan && (
-                          <p className="text-xs sm:text-sm text-gray-300 mt-1">
-                            {galeriPreview.penerangan}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             </RevealOnScroll>
 
@@ -1623,6 +1579,49 @@ export default function App() {
           </div>
         </footer>
       </RevealOnScroll>
+
+      {/* Modal Pratonton Gambar Galeri (di luar RevealOnScroll supaya fixed inset-0 meliputi skrin penuh) */}
+      {galeriPreview && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Pratonton ${galeriPreview.tajuk}`}
+          onClick={() => setGaleriPreview(null)}
+          className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-sm flex items-center justify-center p-4"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative max-w-4xl w-full"
+          >
+            <button
+              type="button"
+              onClick={() => setGaleriPreview(null)}
+              aria-label="Tutup pratonton"
+              className="absolute -top-3 -right-3 z-10 p-2 rounded-full bg-white text-gray-800 shadow-lg hover:bg-cyan-500 hover:text-white transition-colors cursor-pointer"
+            >
+              <X size={18} />
+            </button>
+            <img
+              src={resolveGaleriImage(galeriPreview.image)}
+              alt={galeriPreview.tajuk}
+              className="w-full max-h-[80vh] object-contain rounded-2xl bg-black"
+            />
+            <div className="mt-3 text-white">
+              <span className="text-[10px] font-bold text-cyan-300 uppercase tracking-widest">
+                {galeriPreview.kategori}
+              </span>
+              <h3 className="text-base sm:text-lg font-bold">
+                {galeriPreview.tajuk}
+              </h3>
+              {galeriPreview.penerangan && (
+                <p className="text-xs sm:text-sm text-gray-300 mt-1">
+                  {galeriPreview.penerangan}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal Butiran Aktiviti JPP */}
       {activeActivityModal && (
