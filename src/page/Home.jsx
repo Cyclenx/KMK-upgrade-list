@@ -1575,10 +1575,10 @@ export default function App() {
               </h3>
               <div className="text-xs sm:text-sm text-gray-300 space-y-2 leading-relaxed">
                 <p>
-                  <span className="font-semibold text-cyan-400">Visi:</span> Penjana unggul pelajar pra-universiti berkualiti.
+                  <span className="font-semibold text-cyan-400">Visi:</span> Kolej Matrikulasi Kedah pelaksana terunggul Program Matrikulasi di Malaysia
                 </p>
                 <p>
-                  <span className="font-semibold text-cyan-400">Misi:</span> Membangunkan potensi pelajar dalam bidang sains &amp; teknologi.
+                  <span className="font-semibold text-cyan-400">Misi:</span> Kolej Matrikulasi Kedah beriltizam menyediakan pelajar cemerlang dan berdaya saing untuk universiti dalam dan luar negara melalui persekitaran pengajaran dan pembelajaran yang kondusif dan perkhidmatan yang berkualiti tinggi ke arah memenuhi aspirasi negara.
                 </p>
               </div>
             </div>
@@ -1592,7 +1592,7 @@ export default function App() {
                   Kolej Matrikulasi Kedah, Kementerian Pendidikan Malaysia, 06010 Changlun, Kedah Darul Aman.
                 </p>
                 <p className="pt-1 text-gray-300">
-                  Tel: 04-928 6100 | Faks: 04-924 2186
+                  Tel: 604-928 6100 | Faks: 604-924 2186
                 </p>
                 <p>
                   E-mel:{" "}
