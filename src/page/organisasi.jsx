@@ -220,10 +220,10 @@ const OrganizationPage = () => {
       members: [
         { id: 101, name: "MOHAMAD ZAWIR DANISH BIN MOHAMAD ZARIR", role: "Yang Dipertua", file: "zawir.jpg" },
         { id: 102, name: "NUR KAMALIN SOFEA BINTI MUHD SHAHRIN", role: "Naib Yang Dipertua", file: "kamalin.jpg" },
-        { id: 103, name: "ZAHRATUL HANA BINTI MOHD ZAINI", role: "Majlis Tertinggi", file: "hana.jpg" },
-        { id: 104, name: "LAILATUL BADARIAH BINTI SHARULL IDZHAM", role: "Majlis Tertinggi", file: "laila.jpg" },
-        { id: 105, name: "NIK NUR AISYAH BINTI NIK MOHD HAZRUL", role: "Majlis Tertinggi", file: "aisyah.jpg" },
-        { id: 106, name: "MOHAMAD AIDIL AIMAN BIN MUSTAFFA", role: "Majlis Tertinggi", file: "06-mt.png" },
+        { id: 103, name: "ZAHRATUL HANA BINTI MOHD ZAINI", role: "Setiausaha Agung", file: "hana.jpg" },
+        { id: 104, name: "LAILATUL BADARIAH BINTI SHARULL IDZHAM", role: "Bendahari Kehormat", file: "laila.jpg" },
+        { id: 105, name: "NIK NUR AISYAH BINTI NIK MOHD HAZRUL", role: "Setiausaha Agung 1", file: "aisyah.jpg" },
+        { id: 106, name: "MOHAMAD AIDIL AIMAN BIN MUSTAFFA", role: "Setiausaha Agung 2", file: "aiman.png" },
       ],
     },
     {
