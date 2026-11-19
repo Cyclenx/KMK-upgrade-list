@@ -4,7 +4,6 @@ import {
   Phone,
   Home,
   Info,
-  Globe,
   Users,
   ChevronLeft,
   ChevronRight,
@@ -427,7 +426,7 @@ export default function App() {
   const pngkStatus =
     numericPngk >= 3.75
       ? {
-          label: "Anugerah Pengarah",
+          label: "Calculator",
           cls: "bg-emerald-50 text-emerald-700 border-emerald-200",
         }
       : numericPngk >= 3.5
@@ -687,27 +686,11 @@ export default function App() {
       <div className="relative w-full h-[100dvh] min-h-[600px] max-h-[900px] overflow-hidden bg-gray-950">
         {/* Header & Navigation */}
         <header className="absolute top-0 inset-x-0 z-40 bg-gradient-to-b from-black/90 via-black/50 to-transparent">
-          {/* Bar Atas Ringkas */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 hidden md:flex justify-end items-center gap-6 text-xs text-gray-200 border-b border-white/10">
-            <div className="flex items-center gap-6">
-              <a href="#about" className="hover:text-cyan-400 transition-colors">
-                Perihal Kami
-              </a>
-              <a href="#news" className="hover:text-cyan-400 transition-colors">
-                Berita & Media
-              </a>
-              <a href="#contact" className="hover:text-cyan-400 transition-colors">
-                Hubungi Kami
-              </a>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-cyan-400">BM</span>
-              <span className="text-gray-500">|</span>
-              <span className="hover:text-white cursor-pointer transition-colors">
-                EN
-              </span>
-              <Globe size={14} className="ml-1 opacity-80" />
-            </div>
+          {/* Bar Atas Rasmi */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex items-center justify-between border-b border-white/15">
+            <span className="text-xs sm:text-sm md:text-base font-extrabold tracking-wide text-white drop-shadow-sm">
+              Laman Web Rasmi JABATAN PERWAKILAN PELAJAR KOLEJ MATRIKULASI KEDAH
+            </span>
           </div>
 
           {/* Bar Navigasi Utama */}
@@ -1553,7 +1536,10 @@ export default function App() {
 
       {/* Footer (Meluncur Masuk Dari Bawah) */}
       <RevealOnScroll direction="bottom" delay={100}>
-        <footer className="bg-[#1f1d6b] text-white pt-10 pb-6 border-t-4 border-cyan-400">
+        <footer
+          id="about"
+          className="bg-[#1f1d6b] text-white pt-10 pb-6 border-t-4 border-cyan-400"
+        >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
               <h3 className="text-sm font-bold uppercase tracking-wider mb-2 border-b border-indigo-400/30 pb-1">
@@ -1566,44 +1552,75 @@ export default function App() {
 
             <div>
               <h3 className="text-sm font-bold uppercase tracking-wider mb-2 border-b border-indigo-400/30 pb-1">
-                Visi & Misi
+                Visi &amp; Misi
               </h3>
               <div className="text-xs sm:text-sm text-gray-300 space-y-2 leading-relaxed">
                 <p>
                   <span className="font-semibold text-cyan-400">Visi:</span> Penjana unggul pelajar pra-universiti berkualiti.
                 </p>
                 <p>
-                  <span className="font-semibold text-cyan-400">Misi:</span> Membangunkan potensi pelajar dalam bidang sains & teknologi.
+                  <span className="font-semibold text-cyan-400">Misi:</span> Membangunkan potensi pelajar dalam bidang sains &amp; teknologi.
                 </p>
               </div>
             </div>
 
-            <div>
+            <div id="contact">
               <h3 className="text-sm font-bold uppercase tracking-wider mb-2 border-b border-indigo-400/30 pb-1">
                 Hubungi Kami
               </h3>
               <address className="not-italic text-xs sm:text-sm text-gray-300 space-y-1 leading-relaxed">
-                <p>Kolej Matrikulasi Kedah, 06010 Changlun, Kedah.</p>
-                <p className="pt-1 text-gray-400">
-                  Tel: 04-928 6100 | Faks: 04-928 6111
+                <p>
+                  Kolej Matrikulasi Kedah, Kementerian Pendidikan Malaysia, 06010 Changlun, Kedah Darul Aman.
+                </p>
+                <p className="pt-1 text-gray-300">
+                  Tel: 04-928 6100 | Faks: 04-924 2186
+                </p>
+                <p>
+                  E-mel:{" "}
+                  <a
+                    href="mailto:info@kmk.matrik.edu.my"
+                    className="text-cyan-300 hover:text-cyan-200 underline underline-offset-2"
+                  >
+                    info@kmk.matrik.edu.my
+                  </a>
                 </p>
               </address>
-              <button
-                onClick={() => navigate("/live-board")}
-                className="mt-4 inline-flex items-center gap-2 bg-cyan-500/20 hover:bg-cyan-500 text-cyan-300 hover:text-white border border-cyan-400/40 px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors duration-300 ease-editorial cursor-pointer"
-              >
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
-                </span>
-                <span>Buka Live Board</span>
-                <ArrowRight size={14} />
-              </button>
+              <div className="mt-4 flex flex-wrap items-center gap-2.5">
+                <a
+                  href="https://www.kmk.matrik.edu.my"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white border border-white/25 px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors duration-300 ease-editorial"
+                >
+                  <span>Portal Rasmi KMK</span>
+                  <ExternalLink size={13} />
+                </a>
+                <button
+                  onClick={() => navigate("/live-board")}
+                  className="inline-flex items-center gap-2 bg-cyan-500/20 hover:bg-cyan-500 text-cyan-300 hover:text-white border border-cyan-400/40 px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors duration-300 ease-editorial cursor-pointer"
+                >
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+                  </span>
+                  <span>Buka Live Board</span>
+                  <ArrowRight size={14} />
+                </button>
+              </div>
             </div>
           </div>
 
-          <div className="max-w-7xl mx-auto px-4 mt-8 pt-4 border-t border-indigo-900 text-center text-[11px] text-gray-400">
-            © {new Date().getFullYear()} Kolej Matrikulasi Kedah. Hak Cipta Terpelihara.
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pt-4 border-t border-indigo-900 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-gray-400">
+            <p>
+              © {new Date().getFullYear()} Kolej Matrikulasi Kedah. Hak Cipta Terpelihara.
+            </p>
+            <p className="text-gray-300">
+              Dibangunkan oleh{" "}
+              <span className="font-semibold text-cyan-400">
+                Muhammad Hafizhan Haziq
+              </span>{" "}
+              • Biro Penerangan &amp; Penerbitan JPP KMK
+            </p>
           </div>
         </footer>
       </RevealOnScroll>
