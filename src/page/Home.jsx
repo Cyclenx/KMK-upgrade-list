@@ -180,7 +180,7 @@ export default function App() {
       tabTitle: "Wadah Aspirasi Pelajar",
       headline: "Wadah Aspirasi Pelajar",
       description:
-        "Suara anda, Amanah kami",
+        "Suara Anda, Amanah Kami",
       link: "/organisasi",
       linkText: "Ketahui lagi",
       image: Banner1,
@@ -201,7 +201,7 @@ export default function App() {
       tabTitle: "Aktiviti dan Aspirasi",
       headline: "Aktiviti dan Aspirasi",
       description:
-        "Mencipta pengalaman, Membina Kenangan",
+        "Mencipta Pengalaman, Membina Kenangan",
       link: "/aplikasi",
       linkText: "Terokai portal",
       image: Banner3,
