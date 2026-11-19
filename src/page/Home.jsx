@@ -42,9 +42,9 @@ import { DEFAULT_KAFE_LIST } from "./LiveBoard";
 // renew gambar dekat sni
 import LogoJppKMK from "../logo kmk jpp.jpeg";
 import QrImage from "../image/sampah ii/qr.jpg";
-import Banner1 from "../image/sampah ii/dji 1.jpg";
-import Banner2 from "../image/sampah ii/dji 2.jpg";
-import Banner3 from "../image/sampah ii/dji 3.jpg";
+import Banner1 from "../image/sampah ii/kmk.jpg";
+import Banner2 from "../image/sampah ii/revamp.jpg";
+import Banner3 from "../image/sampah ii/students.jpg";
 
 // Pembantu untuk menyokong laluan gambar tempatan (src/image/...) dan URL luar
 let localImageContext = null;
@@ -174,20 +174,20 @@ export default function App() {
   const slides = [
     {
       id: 0,
-      tabTitle: "Solusi Pendidikan",
-      headline: "Terus Memacu Kecemerlangan",
+      tabTitle: "Wadah Aspirasi Pelajar",
+      headline: "Wadah Aspirasi Pelajar",
       description:
-        "Semangat kami terhadap pendidikan berkualiti mendorong kami untuk mencipta ekosistem pembelajaran dinamik demi masa depan anak bangsa.",
+        "Suara Anda, Amanah Kami",
       link: "/organisasi",
       linkText: "Ketahui lagi",
       image: Banner1,
     },
     {
       id: 1,
-      tabTitle: "Pembangunan Modal Insan",
-      headline: "Sustainable Value Creation",
+      tabTitle: "Kepimpinan & Organisasi",
+      headline: "Kepimpinan & Organisasi",
       description:
-        "Sebagai institusi pra-universiti premier, kami membina sahsiah holistik dan pencapaian akademik berimpak tinggi merentasi sempadan.",
+        "Memimpin Dengan Integriti, Berkhidmat Dengan Dedikasi",
       link: "/Cadangan",
       linkText: "Ketahui lagi",
       image: Banner2
@@ -195,10 +195,10 @@ export default function App() {
     },
     {
       id: 2,
-      tabTitle: "Inovasi & Teknologi",
-      headline: "Memacu Digitalisasi Kampus",
+      tabTitle: "Aktiviti & Aspirasi",
+      headline: "Aktiviti & Aspirasi",
       description:
-        "Mengintegrasikan pembelajaran pintar dan aplikasi digital interaktif bagi memperkasa daya saing warga kolej ke peringkat global.",
+        "Mencipta Pengalaman, Membina Kenangan",
       link: "/aplikasi",
       linkText: "Terokai portal",
       image: Banner3,
