@@ -731,6 +731,14 @@ export default function App() {
               </button>
 
               <button
+                onClick={() => navigate("/takwim")}
+                className="px-3 py-2 hover:text-cyan-300 border-b-2 border-transparent hover:border-cyan-400 transition-colors duration-300 ease-editorial flex items-center gap-1.5 text-gray-200 motion-reduce:transition-none"
+              >
+                <Calendar size={16} />
+                <span>Takwim</span>
+              </button>
+
+              <button
                 onClick={() => navigate("/live-board")}
                 className="px-3 py-2 hover:text-cyan-300 border-b-2 border-transparent hover:border-cyan-400 transition-colors duration-300 ease-editorial flex items-center gap-2 text-gray-200 motion-reduce:transition-none"
               >
@@ -757,7 +765,7 @@ export default function App() {
           {/* Laci Menu Mobile dengan Animasi Slide & Fade */}
           <div
             className={`md:hidden overflow-hidden transition-[max-height,opacity,transform] duration-300 ease-editorial bg-indigo-950/95 backdrop-blur-xl border-b border-white/10 shadow-2xl motion-reduce:transition-none ${mobileMenuOpen
-              ? "max-h-80 opacity-100 translate-y-0"
+              ? "max-h-96 opacity-100 translate-y-0"
               : "max-h-0 opacity-0 -translate-y-3 pointer-events-none"
               }`}
           >
@@ -793,6 +801,17 @@ export default function App() {
               >
                 <Users size={18} />
                 <span>Organisasi Kolej</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  navigate("/takwim");
+                  setMobileMenuOpen(false);
+                }}
+                className="w-full flex items-center gap-3 py-2.5 px-3 rounded-lg text-gray-200 hover:bg-white/5 hover:text-white font-medium text-sm transition-[transform,background-color,color] duration-200 active:scale-[0.98] motion-reduce:transition-none"
+              >
+                <Calendar size={18} />
+                <span>Takwim</span>
               </button>
 
               <button

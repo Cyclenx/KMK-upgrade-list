@@ -13,6 +13,7 @@ import {
   Info,
   Globe,
   Sparkles,
+  Calendar,
 } from "lucide-react";
 import { useNavigate } from "react-router";
 import LogoJppKMK from "../logo kmk jpp.jpeg";
@@ -144,6 +145,25 @@ export default function Cadangan() {
             >
               <Users size={16} />
               <span>Organisasi</span>
+            </button>
+
+            <button
+              onClick={() => navigate("/takwim")}
+              className="px-3 py-2 text-gray-200 hover:text-cyan-300 transition-colors flex items-center gap-1.5"
+            >
+              <Calendar size={16} />
+              <span>Takwim</span>
+            </button>
+
+            <button
+              onClick={() => navigate("/live-board")}
+              className="px-3 py-2 text-gray-200 hover:text-cyan-300 transition-colors flex items-center gap-2 whitespace-nowrap"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+              </span>
+              <span>Live Board</span>
             </button>
           </nav>
         </div>

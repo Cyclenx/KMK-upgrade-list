@@ -7,6 +7,7 @@ import Home from "./page/Home.jsx";
 import MemberProfile from "./page/MemberProfile.jsx";
 import LiveBoard from "./page/LiveBoard.jsx";
 import Admin from "./page/Admin.jsx";
+import Takwim from "./page/Takwim.jsx";
 import MaintenanceGuard from "./components/MaintenanceGuard.jsx";
 import { trackPageView } from "./firebase";
 import reportWebVitals from "./reportWebVitals";
@@ -51,6 +52,14 @@ const router = createBrowserRouter([
     element: (
       <MaintenanceGuard>
         <LiveBoard />
+      </MaintenanceGuard>
+    ),
+  },
+  {
+    path: "/takwim",
+    element: (
+      <MaintenanceGuard>
+        <Takwim />
       </MaintenanceGuard>
     ),
   },
