@@ -284,7 +284,7 @@ export default function App() {
       id: "act_1",
       title: "Minggu Haluan Pelajar & Suai Kenal Sesi 2026/2027",
       dateStr: "2026-10-14",
-      category: "Kebajikan & Kepimpinan",
+      category: "Kebajikan",
       location: "Dewan Sri Ledang, KMK",
       participants: "1,200 Pelajar",
       description:
@@ -310,7 +310,7 @@ export default function App() {
       id: "act_3",
       title: "Karnival Sukan Antara Kolej Kediaman (SUKKOM)",
       dateStr: "2026-08-19",
-      category: "Sukan & Kebudayaan",
+      category: "Sukan dan Kebudayaan",
       location: "Kompleks Sukan Kolej Matrikulasi Kedah",
       participants: "800 Pelajar",
       description:
@@ -323,11 +323,35 @@ export default function App() {
 
   const ACTIVITY_CATEGORIES = [
     "Semua",
-    "Akademik",
-    "Sukan & Kebudayaan",
-    "Kebajikan & Kepimpinan",
+    "Kebajikan",
     "Kerohanian",
+    "Sukan dan Kebudayaan",
+    "Penerbitan dan Penerangan",
+    "Perhubungan Luar",
+    "Akademik",
+    "Keselamatan dan Sahsiah",
   ];
+
+  const getCategoryBadgeClasses = (category) => {
+    switch (category) {
+      case "Kebajikan":
+        return "text-rose-800 bg-rose-50 border-rose-200";
+      case "Kerohanian":
+        return "text-emerald-800 bg-emerald-50 border-emerald-200";
+      case "Sukan dan Kebudayaan":
+        return "text-amber-800 bg-amber-50 border-amber-200";
+      case "Penerbitan dan Penerangan":
+        return "text-purple-800 bg-purple-50 border-purple-200";
+      case "Perhubungan Luar":
+        return "text-sky-800 bg-sky-50 border-sky-200";
+      case "Akademik":
+        return "text-indigo-800 bg-indigo-50 border-indigo-200";
+      case "Keselamatan dan Sahsiah":
+        return "text-teal-800 bg-teal-50 border-teal-200";
+      default:
+        return "text-cyan-800 bg-cyan-50 border-cyan-200";
+    }
+  };
 
   const [jppActivities, setJppActivities] = useState(DEFAULT_JPP_ACTIVITIES);
   const [selectedActivityCat, setSelectedActivityCat] = useState("Semua");
@@ -1292,7 +1316,11 @@ export default function App() {
                               <span>{formatActivityDate(act.dateStr)}</span>
                             </span>
                             {act.category && (
-                              <span className="inline-flex items-center text-[11px] font-semibold text-cyan-800 bg-cyan-50 border border-cyan-200 px-2.5 py-0.5 rounded-full">
+                              <span
+                                className={`inline-flex items-center text-[11px] font-semibold border px-2.5 py-0.5 rounded-full ${getCategoryBadgeClasses(
+                                  act.category
+                                )}`}
+                              >
                                 {act.category}
                               </span>
                             )}
@@ -1658,7 +1686,11 @@ export default function App() {
                   <span className="text-[11px] font-bold text-[#1f1d6b] bg-indigo-50 border border-indigo-100 px-2.5 py-0.5 rounded-full">
                     {formatActivityDate(activeActivityModal.dateStr)}
                   </span>
-                  <span className="text-[11px] font-semibold text-cyan-800 bg-cyan-50 border border-cyan-200 px-2.5 py-0.5 rounded-full">
+                  <span
+                    className={`text-[11px] font-semibold border px-2.5 py-0.5 rounded-full ${getCategoryBadgeClasses(
+                      activeActivityModal.category
+                    )}`}
+                  >
                     {activeActivityModal.category}
                   </span>
                 </div>

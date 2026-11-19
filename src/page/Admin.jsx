@@ -131,7 +131,7 @@ export default function Admin() {
   const [newActivity, setNewActivity] = useState({
     title: "",
     dateStr: "",
-    category: "Akademik",
+    category: "Kebajikan",
     location: "",
     participants: "",
     description: "",
@@ -676,7 +676,7 @@ export default function Admin() {
       await addDoc(collection(db, "jpp_activities"), {
         title: newActivity.title.trim(),
         dateStr: newActivity.dateStr,
-        category: newActivity.category || "Akademik",
+        category: newActivity.category || "Kebajikan",
         location: newActivity.location.trim(),
         participants: newActivity.participants.trim(),
         description: newActivity.description.trim(),
@@ -690,7 +690,7 @@ export default function Admin() {
       setNewActivity({
         title: "",
         dateStr: "",
-        category: "Akademik",
+        category: "Kebajikan",
         location: "",
         participants: "",
         description: "",
@@ -1579,14 +1579,21 @@ export default function Admin() {
                         }
                         className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs bg-white"
                       >
-                        <option value="Akademik">Akademik</option>
-                        <option value="Sukan & Kebudayaan">
-                          Sukan &amp; Kebudayaan
-                        </option>
-                        <option value="Kebajikan & Kepimpinan">
-                          Kebajikan &amp; Kepimpinan
-                        </option>
+                        <option value="Kebajikan">Kebajikan</option>
                         <option value="Kerohanian">Kerohanian</option>
+                        <option value="Sukan dan Kebudayaan">
+                          Sukan dan Kebudayaan
+                        </option>
+                        <option value="Penerbitan dan Penerangan">
+                          Penerbitan dan Penerangan
+                        </option>
+                        <option value="Perhubungan Luar">
+                          Perhubungan Luar
+                        </option>
+                        <option value="Akademik">Akademik</option>
+                        <option value="Keselamatan dan Sahsiah">
+                          Keselamatan dan Sahsiah
+                        </option>
                       </select>
                     </div>
                   </div>
