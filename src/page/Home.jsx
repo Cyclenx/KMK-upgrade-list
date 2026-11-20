@@ -22,6 +22,7 @@ import {
   AlertTriangle,
   MapPin,
   Calendar,
+  Mail,
 } from "lucide-react";
 import { useNavigate } from "react-router";
 import { collection, doc, onSnapshot } from "firebase/firestore";
@@ -211,35 +212,42 @@ export default function App() {
       jawatan: "Pengarah",
       nama: "Puan Zuriah binti Sulaiman",
       gelaran: "A.M.P",
-      penerangan:
-        "Memimpin kecemerlangan akademik, kepimpinan pelajar, dan pengurusan strategik Kolej Matrikulasi Kedah.",
-      tel: "04-928 6100",
-      image: Banner1
-
+      email: "zuriah@kmk.matrik.edu.my",
+      tel: "04-9286100",
+      image: "/pengarah.webp",
     },
     {
       id: 1,
-      jawatan: "PPHEP 1",
-      subJawatan: "Pegawai Pengurusan Hal Ehwal Pelajar 1",
-      nama: "Encik Ahmad bin Hassan",
-      gelaran: "M.Ed",
-      penerangan:
-        "Menguruskan hal ehwal pembangunan sahsiah, disiplin, kepimpinan pelajar, serta aktiviti persatuan kolej.",
-      tel: "04-928 6102",
-      image: Banner1
-
+      jawatan: "Timbalan Pengarah",
+      nama: "Tuan Haji Noorhisam bin Samsuddin",
+      gelaran: "P.K.T",
+      email: "noorhisam@kmk.matrik.edu.my",
+      tel: "04-9286100 (ext : 1004)",
+      image: "/tp.webp",
     },
     {
       id: 2,
-      jawatan: "PPHEP 2",
-      subJawatan: "Pegawai Pengurusan Hal Ehwal Pelajar 2",
-      nama: "Puan Noraini binti Mohamed",
-      gelaran: "K.M.N",
-      penerangan:
-        "Memantau kebajikan pelajar, pengurusan kediaman/kolej kediaman, kaunseling dan sukan pelajar.",
-      tel: "04-928 6103",
-      image: Banner1
-
+      jawatan: "Ketua Jabatan Pengurusan Pelajar",
+      nama: "Encik Azrulnizam bin Yaacob",
+      email: "azrulnizam@kmk.matrik.edu.my",
+      tel: "04-9286100 (ext : 1024)",
+      image: "/kjpp.webp",
+    },
+    {
+      id: 3,
+      jawatan: "Penolong Pengarah Hal Ehwal Pelajar 1",
+      nama: "Mohd Syafiq bin Ghazali",
+      email: "syafiq@kmk.matrik.edu.my",
+      tel: "04-9286100 (ext : 1027)",
+      image: "/sir-syafiq.webp",
+    },
+    {
+      id: 4,
+      jawatan: "Penolong Pengarah Hal Ehwal Pelajar 2",
+      nama: "Rosmaniza binti Ibrahim",
+      email: "rosmaniza@kmk.matrik.edu.my",
+      tel: "04-9286100 (ext : 1025)",
+      image: "/madam-jaja.webp",
     },
   ];
 
@@ -1008,27 +1016,38 @@ export default function App() {
           </section>
         </RevealOnScroll>
 
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14 items-start overflow-hidden">
-          {/* Gambar Kiri (Ratio 1:1, Untuk setup lain nanti) */}
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start overflow-hidden">
+          {/* Lajur Kanan: Kod QR Rasmi KMK (Jelas & Mudah Diimbas) */}
           <RevealOnScroll
-            direction="left"
-            delay={100}
-            className="order-2 lg:order-1"
+            direction="right"
+            delay={150}
+            className="order-2 lg:order-2 lg:col-span-5"
           >
-            <div className="relative group rounded-2xl overflow-hidden shadow-sm border border-slate-200/80 bg-white aspect-square w-full">
-              <img
-                src={QrImage}
-                alt="QR Kolej Matrikulasi Kedah"
-                className="w-full h-full object-cover transition-transform duration-500 ease-editorial group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+            <div className="flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-4 pb-2 border-b-2 border-cyan-500">
+                <h2 className="text-[#1f1d6b] text-lg sm:text-xl font-bold uppercase tracking-wider inline-block">
+                  Kod QR Rasmi KMK
+                </h2>
+              </div>
+              <div className="relative group rounded-2xl overflow-hidden shadow-sm border border-slate-200/80 bg-white p-4 sm:p-5">
+                <div className="aspect-square w-full overflow-hidden rounded-xl bg-white">
+                  <img
+                    src={QrImage}
+                    alt="QR Kolej Matrikulasi Kedah"
+                    className="w-full h-full object-contain transition-transform duration-500 ease-editorial group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                  />
+                </div>
+                <p className="mt-3 text-center text-xs font-medium text-gray-500">
+                  Imbas kod QR ini untuk akses pantas portal &amp; saluran rasmi KMK
+                </p>
+              </div>
             </div>
           </RevealOnScroll>
 
-          {/* Lajur Kanan: Galeri KMK di atas Pengurusan Tertinggi */}
-          <div className="order-1 lg:order-2 flex flex-col gap-10">
+          {/* Lajur Kiri: Galeri KMK di atas Pengurusan Tertinggi */}
+          <div className="order-1 lg:order-1 lg:col-span-7 flex flex-col gap-10">
             {/* Slider Galeri KMK (Ratio 4:2) */}
-            <RevealOnScroll direction="right" delay={100}>
+            <RevealOnScroll direction="left" delay={100}>
               <div className="flex flex-col justify-between">
                 <div className="flex items-center justify-between mb-4 pb-2 border-b-2 border-cyan-500">
                   <h2 className="text-[#1f1d6b] text-lg sm:text-xl font-bold uppercase tracking-wider inline-block">
@@ -1189,17 +1208,17 @@ export default function App() {
                           : "opacity-0 z-0 pointer-events-none translate-x-4"
                           }`}
                       >
-                        <div className="sm:w-2/5 bg-gradient-to-br from-indigo-900 to-[#1f1d6b] p-4 sm:p-6 flex flex-col items-center justify-center relative">
-                          <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-full overflow-hidden border-4 border-white/90 shadow-lg bg-gray-200">
-                            <img
-                              src={person.image}
-                              alt={person.nama}
-                              className="w-full h-full object-cover"
-                            />
+                        <div className="h-44 sm:h-full sm:w-2/5 relative overflow-hidden bg-indigo-950 shrink-0">
+                          <img
+                            src={person.image}
+                            alt={person.nama}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent px-3 py-2">
+                            <span className="text-[10px] font-bold text-cyan-300 uppercase tracking-wider block text-center">
+                              {person.jawatan}
+                            </span>
                           </div>
-                          <span className="mt-2 text-[10px] font-semibold text-cyan-300 uppercase tracking-wider text-center">
-                            {person.jawatan}
-                          </span>
                         </div>
 
                         <div className="flex-1 p-5 sm:p-7 flex flex-col justify-center bg-white">
@@ -1220,9 +1239,15 @@ export default function App() {
                               {person.gelaran}
                             </span>
                           </h3>
-                          <p className="text-gray-600 text-xs mt-2 leading-relaxed">
-                            {person.penerangan}
-                          </p>
+                          <div className="mt-2.5 flex items-center gap-1.5 text-xs text-gray-600">
+                            <Mail size={13} className="text-cyan-600 shrink-0" />
+                            <a
+                              href={`mailto:${person.email}`}
+                              className="hover:text-cyan-700 hover:underline truncate"
+                            >
+                              {person.email}
+                            </a>
+                          </div>
                           <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-gray-500">
                             <div className="flex items-center gap-1.5">
                               <Phone size={13} className="text-cyan-600" />
@@ -1633,13 +1658,21 @@ export default function App() {
             <p>
               © {new Date().getFullYear()} Kolej Matrikulasi Kedah. Hak Cipta Terpelihara.
             </p>
-            <p className="text-gray-300">
-              Dibangunkan oleh{" "}
-              <span className="font-semibold text-cyan-400">
-                Muhammad Hafizhan Haziq
-              </span>{" "}
-              • Biro Penerangan &amp; Penerbitan JPP KMK
-            </p>
+            <div className="text-gray-300 text-center sm:text-right space-y-0.5">
+              <p>
+                Dibangunkan oleh{" "}
+                <span className="font-semibold text-cyan-400">
+                  Muhammad Hafizhan Haziq
+                </span>{" "}
+                • Biro Penerangan &amp; Penerbitan JPP KMK
+              </p>
+              <p>
+                bersama{" "}
+                <span className="font-semibold text-cyan-400">
+                  Afif Huzaifah
+                </span>
+              </p>
+            </div>
           </div>
         </footer>
       </RevealOnScroll>
