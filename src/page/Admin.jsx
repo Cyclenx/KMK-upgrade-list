@@ -19,6 +19,9 @@ import {
   Send,
   AlertCircle,
   Loader2,
+  Megaphone,
+  X,
+  ZoomIn,
 } from "lucide-react";
 import { useNavigate } from "react-router";
 import {
@@ -31,13 +34,16 @@ import {
   doc,
   setDoc,
   addDoc,
+  updateDoc,
   deleteDoc,
   onSnapshot,
 } from "firebase/firestore";
+import { ref, deleteObject } from "firebase/storage";
 import {
   auth,
   googleProvider,
   db,
+  storage,
   DEVELOPER_EMAILS,
 } from "../firebase";
 import {
@@ -55,6 +61,7 @@ import {
 const ALL_TABS = [
   { id: "kafe_timeline", label: "Kafe & Timeline", icon: Coffee },
   { id: "notifikasi", label: "Notifikasi", icon: BellRing },
+  { id: "promosi", label: "Kelulusan Promosi", icon: Megaphone },
   { id: "galeri", label: "Galeri Album", icon: ImageIcon },
   { id: "aktiviti", label: "Jejak Aktiviti JPP", icon: Calendar },
   { id: "exco_users", label: "Pengurusan E-mel Exco", icon: Users, devOnly: true },
@@ -65,6 +72,7 @@ const ALL_TABS = [
 const ASSIGNABLE_MODULES = [
   { id: "kafe_timeline", label: "Kafe & Timeline" },
   { id: "notifikasi", label: "Notifikasi" },
+  { id: "promosi", label: "Kelulusan Promosi" },
   { id: "galeri", label: "Galeri Album" },
   { id: "aktiviti", label: "Jejak Aktiviti JPP" },
   { id: "logs", label: "Log Aktiviti" },
@@ -271,6 +279,10 @@ export default function Admin() {
   const [pushResult, setPushResult] = useState(null);
   const [sendTimelinePush, setSendTimelinePush] = useState(true);
 
+  // State: Kelulusan Promosi Pelajar
+  const [promotionsList, setPromotionsList] = useState([]);
+  const [promoLightboxUrl, setPromoLightboxUrl] = useState("");
+
   const isDeveloper =
     Boolean(user?.email) &&
     DEVELOPER_EMAILS.includes(user.email.toLowerCase());
@@ -468,6 +480,16 @@ export default function Admin() {
       handleListenerError
     );
 
+    const unsubPromotions = onSnapshot(
+      collection(db, "promotions"),
+      (snap) => {
+        const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        docs.sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0));
+        setPromotionsList(docs);
+      },
+      handleListenerError
+    );
+
     const unsubGaleri = onSnapshot(
       collection(db, "galeri_events"),
       (snap) => {
@@ -579,6 +601,7 @@ export default function Admin() {
     return () => {
       unsubKafe();
       unsubTimeline();
+      unsubPromotions();
       unsubGaleri();
       unsubActivities();
       unsubExco();
@@ -724,6 +747,49 @@ export default function Admin() {
       }
     } catch (err) {
       showToast(`Gagal menambah timeline: ${err.message}`);
+    }
+  };
+
+  // Kelulusan & pemadaman Promosi Pelajar
+  const pendingPromotionsCount = promotionsList.filter(
+    (p) => p.status === "pending"
+  ).length;
+
+  const handleApprovePromotion = async (promo) => {
+    try {
+      await updateDoc(doc(db, "promotions", promo.id), {
+        status: "approved",
+        approvedBy: user?.email || "admin",
+        approvedAtMs: Date.now(),
+      });
+      await recordLog("Luluskan Promosi", promo.tajuk);
+      showToast(`Promosi "${promo.tajuk}" telah diluluskan!`);
+    } catch (err) {
+      showToast(`Gagal meluluskan promosi: ${err.message}`);
+    }
+  };
+
+  const handleDeletePromotion = async (promo) => {
+    if (
+      !window.confirm(
+        `Adakah anda pasti mahu menolak / memadam promosi "${promo.tajuk}"?`
+      )
+    ) {
+      return;
+    }
+    try {
+      await deleteDoc(doc(db, "promotions", promo.id));
+      if (promo.posterPath) {
+        try {
+          await deleteObject(ref(storage, promo.posterPath));
+        } catch (storageErr) {
+          console.warn("Poster storage tidak dapat dipadam:", storageErr);
+        }
+      }
+      await recordLog("Padam / Tolak Promosi", promo.tajuk);
+      showToast(`Promosi "${promo.tajuk}" telah dipadam.`);
+    } catch (err) {
+      showToast(`Gagal memadam promosi: ${err.message}`);
     }
   };
 
@@ -1090,6 +1156,11 @@ export default function Admin() {
                   >
                     <Icon size={16} />
                     <span>{tab.label}</span>
+                    {tab.id === "promosi" && pendingPromotionsCount > 0 && (
+                      <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-extrabold bg-amber-400 text-[#0f172a]">
+                        {pendingPromotionsCount}
+                      </span>
+                    )}
                     {isLockedForUser && (
                       <Lock size={13} className="opacity-80 shrink-0" />
                     )}
@@ -2481,6 +2552,219 @@ export default function Admin() {
                     </button>
                   </div>
                 </form>
+              </div>
+            )}
+
+            {/* TAB KELULUSAN PROMOSI PELAJAR */}
+            {activeTab === "promosi" && (
+              <div className="space-y-6">
+                <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <h2 className="text-lg font-bold text-[#1f1d6b]">
+                      Kelulusan Promosi Aktiviti &amp; Jualan Pelajar
+                    </h2>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      Semak kiriman pelajar sebelum diluluskan untuk paparan umum di halaman /promosi.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs font-bold">
+                    <span className="px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800">
+                      Menunggu: {pendingPromotionsCount}
+                    </span>
+                    <span className="px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800">
+                      Diluluskan:{" "}
+                      {promotionsList.filter((p) => p.status === "approved").length}
+                    </span>
+                  </div>
+                </div>
+
+                {promotionsList.length === 0 ? (
+                  <div className="bg-white rounded-2xl border border-slate-200 p-10 text-center text-sm text-gray-500">
+                    Belum ada sebarang kiriman promosi daripada pelajar.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    {promotionsList.map((promo) => {
+                      const isPending = promo.status === "pending";
+                      return (
+                        <div
+                          key={promo.id}
+                          className={`bg-white rounded-2xl border shadow-sm overflow-hidden flex flex-col ${
+                            isPending
+                              ? "border-amber-300 ring-1 ring-amber-200"
+                              : "border-slate-200"
+                          }`}
+                        >
+                          {promo.posterUrl && (
+                            <div
+                              onClick={() => setPromoLightboxUrl(promo.posterUrl)}
+                              className="relative h-56 w-full overflow-hidden bg-slate-900 cursor-pointer group"
+                            >
+                              <img
+                                src={promo.posterUrl}
+                                alt=""
+                                aria-hidden="true"
+                                className="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-45"
+                              />
+                              <img
+                                src={promo.posterUrl}
+                                alt={promo.tajuk}
+                                className="relative z-10 w-full h-full object-contain"
+                              />
+                              <span className="absolute bottom-2.5 right-2.5 z-20 inline-flex items-center gap-1 bg-black/70 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full">
+                                <ZoomIn size={12} />
+                                <span>Klik untuk Besarkan</span>
+                              </span>
+                            </div>
+                          )}
+
+                          <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                            <div className="space-y-2.5">
+                              <div className="flex items-center justify-between gap-2 flex-wrap">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span
+                                    className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
+                                      promo.jenis === "jualan"
+                                        ? "bg-purple-50 text-purple-700 border border-purple-200"
+                                        : "bg-cyan-50 text-cyan-800 border border-cyan-200"
+                                    }`}
+                                  >
+                                    {promo.jenis === "jualan"
+                                      ? "Jualan Pelajar"
+                                      : "Aktiviti & Program"}
+                                  </span>
+                                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-[#1f1d6b] border border-indigo-200">
+                                    {promo.jurusan}
+                                  </span>
+                                </div>
+
+                                <span
+                                  className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase ${
+                                    isPending
+                                      ? "bg-amber-100 text-amber-800"
+                                      : "bg-emerald-100 text-emerald-800"
+                                  }`}
+                                >
+                                  {isPending ? "Pending" : "Approved"}
+                                </span>
+                              </div>
+
+                              <h3 className="text-base font-extrabold text-gray-900">
+                                {promo.tajuk}
+                              </h3>
+
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs text-gray-600">
+                                <div>
+                                  <strong>Tarikh:</strong> {promo.tarikh || "-"}
+                                </div>
+                                <div>
+                                  <strong>Masa:</strong> {promo.masa || "-"}
+                                </div>
+                                <div>
+                                  <strong>Lokasi:</strong> {promo.lokasi || "-"}
+                                </div>
+                                <div>
+                                  <strong>Penganjur/Penjual:</strong>{" "}
+                                  {promo.namaPenganjur || "-"}
+                                </div>
+                                <div className="sm:col-span-2">
+                                  <strong>Hubungan:</strong> {promo.hubungan || "-"}
+                                </div>
+                                {promo.jenis === "aktiviti" && promo.yuran && (
+                                  <div className="sm:col-span-2">
+                                    <strong>Yuran / Syarat:</strong> {promo.yuran}
+                                  </div>
+                                )}
+                              </div>
+
+                              {promo.jenis === "aktiviti" && promo.penerangan && (
+                                <p className="text-xs text-gray-600 bg-slate-50 rounded-xl p-3 border border-slate-100 whitespace-pre-line">
+                                  {promo.penerangan}
+                                </p>
+                              )}
+
+                              {promo.jenis === "jualan" &&
+                                Array.isArray(promo.menuItems) &&
+                                promo.menuItems.length > 0 && (
+                                  <div className="rounded-xl border border-slate-200 overflow-hidden">
+                                    <table className="w-full text-left text-xs">
+                                      <thead className="bg-slate-100 text-gray-600 font-bold">
+                                        <tr>
+                                          <th className="px-3 py-1.5">Kategori</th>
+                                          <th className="px-3 py-1.5">Produk</th>
+                                          <th className="px-3 py-1.5 text-right">
+                                            Harga
+                                          </th>
+                                        </tr>
+                                      </thead>
+                                      <tbody className="divide-y divide-slate-100">
+                                        {promo.menuItems.map((m, idx) => (
+                                          <tr key={idx}>
+                                            <td className="px-3 py-1.5">
+                                              {m.kategori}
+                                            </td>
+                                            <td className="px-3 py-1.5 font-medium">
+                                              {m.nama}
+                                            </td>
+                                            <td className="px-3 py-1.5 text-right font-bold text-[#1f1d6b]">
+                                              RM {Number(m.harga || 0).toFixed(2)}
+                                            </td>
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                )}
+                            </div>
+
+                            <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                              {isPending && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleApprovePromotion(promo)}
+                                  className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl cursor-pointer"
+                                >
+                                  <CheckCircle2 size={14} />
+                                  <span>Luluskan</span>
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => handleDeletePromotion(promo)}
+                                className="inline-flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold px-3.5 py-2 rounded-xl cursor-pointer"
+                              >
+                                <Trash2 size={14} />
+                                <span>Tolak / Padam</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {promoLightboxUrl && (
+                  <div
+                    onClick={() => setPromoLightboxUrl("")}
+                    className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setPromoLightboxUrl("")}
+                      aria-label="Tutup poster"
+                      className="absolute top-4 right-4 p-2.5 rounded-full bg-white/15 hover:bg-white/25 text-white"
+                    >
+                      <X size={22} />
+                    </button>
+                    <img
+                      src={promoLightboxUrl}
+                      alt="Pratonton poster penuh"
+                      onClick={(e) => e.stopPropagation()}
+                      className="max-h-[90vh] max-w-full object-contain rounded-xl shadow-2xl"
+                    />
+                  </div>
+                )}
               </div>
             )}
 

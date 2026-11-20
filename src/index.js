@@ -8,6 +8,7 @@ import MemberProfile from "./page/MemberProfile.jsx";
 import LiveBoard from "./page/LiveBoard.jsx";
 import Admin from "./page/Admin.jsx";
 import Takwim from "./page/Takwim.jsx";
+import Promosi from "./page/Promosi.jsx";
 import MaintenanceGuard from "./components/MaintenanceGuard.jsx";
 import { trackPageView } from "./firebase";
 import reportWebVitals from "./reportWebVitals";
@@ -60,6 +61,14 @@ const router = createBrowserRouter([
     element: (
       <MaintenanceGuard>
         <Takwim />
+      </MaintenanceGuard>
+    ),
+  },
+  {
+    path: "/promosi",
+    element: (
+      <MaintenanceGuard>
+        <Promosi />
       </MaintenanceGuard>
     ),
   },

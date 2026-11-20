@@ -14,6 +14,7 @@ import {
   Globe,
   Sparkles,
   Calendar,
+  Megaphone,
 } from "lucide-react";
 import { useNavigate } from "react-router";
 import LogoJppKMK from "../jppkmklogo.png";
@@ -153,6 +154,14 @@ export default function Cadangan() {
             >
               <Calendar size={16} />
               <span>Takwim</span>
+            </button>
+
+            <button
+              onClick={() => navigate("/promosi")}
+              className="px-3 py-2 text-gray-200 hover:text-cyan-300 transition-colors flex items-center gap-1.5"
+            >
+              <Megaphone size={16} />
+              <span>Promosi</span>
             </button>
 
             <button

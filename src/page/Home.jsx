@@ -23,6 +23,7 @@ import {
   MapPin,
   Calendar,
   Mail,
+  Megaphone,
 } from "lucide-react";
 import { useNavigate } from "react-router";
 import { collection, doc, onSnapshot } from "firebase/firestore";
@@ -748,6 +749,14 @@ export default function App() {
               </button>
 
               <button
+                onClick={() => navigate("/promosi")}
+                className="px-3 py-2 hover:text-cyan-300 border-b-2 border-transparent hover:border-cyan-400 transition-colors duration-300 ease-editorial flex items-center gap-1.5 text-gray-200 motion-reduce:transition-none"
+              >
+                <Megaphone size={16} />
+                <span>Promosi</span>
+              </button>
+
+              <button
                 onClick={() => navigate("/live-board")}
                 className="px-3 py-2 hover:text-cyan-300 border-b-2 border-transparent hover:border-cyan-400 transition-colors duration-300 ease-editorial flex items-center gap-2 text-gray-200 motion-reduce:transition-none"
               >
@@ -821,6 +830,17 @@ export default function App() {
               >
                 <Calendar size={18} />
                 <span>Takwim</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  navigate("/promosi");
+                  setMobileMenuOpen(false);
+                }}
+                className="w-full flex items-center gap-3 py-2.5 px-3 rounded-lg text-gray-200 hover:bg-white/5 hover:text-white font-medium text-sm transition-[transform,background-color,color] duration-200 active:scale-[0.98] motion-reduce:transition-none"
+              >
+                <Megaphone size={18} />
+                <span>Promosi</span>
               </button>
 
               <button
