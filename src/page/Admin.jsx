@@ -269,6 +269,7 @@ export default function Admin() {
   });
   const [pushSending, setPushSending] = useState(false);
   const [pushResult, setPushResult] = useState(null);
+  const [sendTimelinePush, setSendTimelinePush] = useState(true);
 
   const isDeveloper =
     Boolean(user?.email) &&
@@ -653,17 +654,20 @@ export default function Admin() {
           minute: "2-digit",
         });
 
+      const tajukTrimmed = newTimeline.tajuk.trim();
+      const sebabTrimmed = newTimeline.sebab.trim();
+
       await addDoc(collection(db, "liveboard_timeline"), {
-        tajuk: newTimeline.tajuk.trim(),
+        tajuk: tajukTrimmed,
         status: newTimeline.status.trim() || "Makluman",
-        sebab: newTimeline.sebab.trim(),
+        sebab: sebabTrimmed,
         masa: masaText,
         isPinned: Boolean(newTimeline.isPinned),
         publishAtMs,
         expireAtMs,
         createdAtMs: Date.now(),
       });
-      await recordLog("Tambah Timeline", newTimeline.tajuk.trim());
+      await recordLog("Tambah Timeline", tajukTrimmed);
       setNewTimeline({
         tajuk: "",
         status: "Makluman",
@@ -673,11 +677,51 @@ export default function Admin() {
         publishAt: "",
         expireAt: "",
       });
-      showToast(
-        publishAtMs && publishAtMs > Date.now()
-          ? "Item timeline telah dijadualkan."
-          : "Item timeline baharu telah ditambah."
-      );
+
+      if (sendTimelinePush && auth.currentUser) {
+        try {
+          const idToken = await auth.currentUser.getIdToken();
+          const response = await fetch(
+            "https://jppkmk-push.halimhafizhan1059.workers.dev",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${idToken}`,
+              },
+              body: JSON.stringify({
+                title: tajukTrimmed || "Hebahan Baharu Live Board JPP KMK",
+                body: sebabTrimmed || tajukTrimmed,
+                url: "/live-board",
+              }),
+            }
+          );
+
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            throw new Error(data?.error || data?.message || "Gagal hantar push");
+          }
+
+          const sentCount =
+            data?.sentCount ?? data?.successCount ?? data?.sent ?? data?.count;
+          showToast(
+            typeof sentCount === "number"
+              ? `Hebahan Timeline diterbitkan & notifikasi dihantar kepada ${sentCount} peranti!`
+              : "Hebahan Timeline diterbitkan & notifikasi berjaya dihantar!"
+          );
+        } catch (pushErr) {
+          console.error("Push notification gagal selepas simpan timeline:", pushErr);
+          showToast(
+            "Hebahan Timeline berjaya diterbitkan, tetapi notifikasi gagal dihantar."
+          );
+        }
+      } else {
+        showToast(
+          publishAtMs && publishAtMs > Date.now()
+            ? "Item timeline telah dijadualkan."
+            : "Item timeline baharu telah ditambah."
+        );
+      }
     } catch (err) {
       showToast(`Gagal menambah timeline: ${err.message}`);
     }
@@ -1325,6 +1369,22 @@ export default function Admin() {
                           className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs"
                         />
                       </div>
+                    </div>
+
+                    <div className="rounded-xl bg-cyan-50/80 border border-cyan-200 px-3.5 py-2.5">
+                      <label className="flex items-center gap-2.5 text-xs font-bold text-[#1f1d6b] cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={sendTimelinePush}
+                          onChange={(e) => setSendTimelinePush(e.target.checked)}
+                          className="h-4 w-4 accent-cyan-600 rounded"
+                        />
+                        <BellRing size={14} className="text-cyan-700 shrink-0" />
+                        <span>Hantar Push Notification ke telefon pelajar serentak</span>
+                      </label>
+                      <p className="text-[11px] text-gray-600 mt-1 ml-6">
+                        Apabila ditandakan, notifikasi segera akan dihantar kepada semua peranti pelajar yang melanggan sebaik sahaja hebahan Timeline diterbitkan.
+                      </p>
                     </div>
 
                     <button

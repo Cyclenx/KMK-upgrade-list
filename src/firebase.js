@@ -3,6 +3,7 @@ import { getAnalytics, logEvent } from "firebase/analytics";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getMessaging, isSupported } from "firebase/messaging";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC3GJMivZzcaNqZ2vw7e_qV_AWKTkp0U5M",
@@ -29,6 +30,7 @@ if (typeof window !== "undefined") {
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 export const db = getFirestore(app);
+export const storage = getStorage(app);
 
 let messagingPromise = null;
 export async function getFirebaseMessaging() {
