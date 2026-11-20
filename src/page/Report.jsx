@@ -16,7 +16,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { useNavigate } from "react-router";
-import LogoJppKMK from "../logo kmk jpp.jpeg";
+import LogoJppKMK from "../jppkmklogo.png";
 
 export default function Cadangan() {
   const navigate = useNavigate();

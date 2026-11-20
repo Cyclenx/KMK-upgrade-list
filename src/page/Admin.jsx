@@ -15,6 +15,10 @@ import {
   Save,
   CheckCircle2,
   Lock,
+  BellRing,
+  Send,
+  AlertCircle,
+  Loader2,
 } from "lucide-react";
 import { useNavigate } from "react-router";
 import {
@@ -50,6 +54,7 @@ import {
 
 const ALL_TABS = [
   { id: "kafe_timeline", label: "Kafe & Timeline", icon: Coffee },
+  { id: "notifikasi", label: "Notifikasi", icon: BellRing },
   { id: "galeri", label: "Galeri Album", icon: ImageIcon },
   { id: "aktiviti", label: "Jejak Aktiviti JPP", icon: Calendar },
   { id: "exco_users", label: "Pengurusan E-mel Exco", icon: Users, devOnly: true },
@@ -59,6 +64,7 @@ const ALL_TABS = [
 
 const ASSIGNABLE_MODULES = [
   { id: "kafe_timeline", label: "Kafe & Timeline" },
+  { id: "notifikasi", label: "Notifikasi" },
   { id: "galeri", label: "Galeri Album" },
   { id: "aktiviti", label: "Jejak Aktiviti JPP" },
   { id: "logs", label: "Log Aktiviti" },
@@ -255,6 +261,15 @@ export default function Admin() {
   // State: Activity Logs
   const [activityLogs, setActivityLogs] = useState([]);
 
+  // State: Push Notification
+  const [pushForm, setPushForm] = useState({
+    title: "",
+    body: "",
+    url: "/",
+  });
+  const [pushSending, setPushSending] = useState(false);
+  const [pushResult, setPushResult] = useState(null);
+
   const isDeveloper =
     Boolean(user?.email) &&
     DEVELOPER_EMAILS.includes(user.email.toLowerCase());
@@ -277,6 +292,78 @@ export default function Admin() {
       });
     } catch {
       // Abaikan jika log gagal ditulis
+    }
+  };
+
+  const handleSendPushNotification = async (e) => {
+    e.preventDefault();
+    const title = pushForm.title.trim();
+    const body = pushForm.body.trim();
+    const url = pushForm.url || "/";
+
+    if (!title || !body) {
+      setPushResult({
+        type: "error",
+        message: "Sila isi Tajuk Notifikasi dan Mesej Hebahan terlebih dahulu.",
+      });
+      return;
+    }
+
+    if (!auth.currentUser) {
+      setPushResult({
+        type: "error",
+        message: "Sesi log masuk tidak sah. Sila log masuk semula.",
+      });
+      return;
+    }
+
+    setPushSending(true);
+    setPushResult(null);
+
+    try {
+      const idToken = await auth.currentUser.getIdToken();
+      const response = await fetch(
+        "https://jppkmk-push.halimhafizhan1059.workers.dev",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
+          },
+          body: JSON.stringify({ title, body, url }),
+        }
+      );
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(
+          data?.error ||
+            data?.message ||
+            `Gagal menghantar notifikasi (HTTP ${response.status}).`
+        );
+      }
+
+      const sentCount =
+        data?.sentCount ?? data?.successCount ?? data?.sent ?? data?.count;
+      const successMsg =
+        typeof sentCount === "number"
+          ? `Berjaya dihantar kepada ${sentCount} peranti!`
+          : data?.message || "Notifikasi berjaya dihantar kepada semua peranti!";
+
+      setPushResult({ type: "success", message: successMsg });
+      setPushForm((prev) => ({ ...prev, title: "", body: "" }));
+      await recordLog("Hantar Push Notification", `${title} (${url})`);
+      showToast(successMsg);
+    } catch (err) {
+      console.error("Gagal menghantar push notification:", err);
+      setPushResult({
+        type: "error",
+        message:
+          err?.message ||
+          "Ralat rangkaian berlaku semasa menghantar notifikasi.",
+      });
+    } finally {
+      setPushSending(false);
     }
   };
 
@@ -2213,6 +2300,127 @@ export default function Admin() {
                   </div>
                 );
               })()}
+              </div>
+            )}
+
+            {/* TAB NOTIFIKASI PUSH */}
+            {activeTab === "notifikasi" && (
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm max-w-3xl space-y-6">
+                <div className="border-b-2 border-cyan-500 pb-3 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#1f1d6b] text-cyan-300 flex items-center justify-center shrink-0">
+                    <BellRing size={20} />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-[#1f1d6b]">
+                      Hantar Push Notification ke Pelajar
+                    </h2>
+                    <p className="text-xs text-gray-500">
+                      Siarkan makluman segera terus ke peranti Android, iOS (PWA) dan Desktop yang melanggan notifikasi portal.
+                    </p>
+                  </div>
+                </div>
+
+                {pushResult && (
+                  <div
+                    role="alert"
+                    className={`rounded-xl border px-4 py-3 text-xs sm:text-sm font-medium flex items-center gap-2.5 ${
+                      pushResult.type === "success"
+                        ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                        : "bg-red-50 border-red-200 text-red-700"
+                    }`}
+                  >
+                    {pushResult.type === "success" ? (
+                      <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+                    ) : (
+                      <AlertCircle size={18} className="text-red-500 shrink-0" />
+                    )}
+                    <span>{pushResult.message}</span>
+                  </div>
+                )}
+
+                <form onSubmit={handleSendPushNotification} className="space-y-4">
+                  <div>
+                    <label
+                      htmlFor="push-title"
+                      className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5"
+                    >
+                      Tajuk Notifikasi
+                    </label>
+                    <input
+                      id="push-title"
+                      type="text"
+                      required
+                      value={pushForm.title}
+                      onChange={(e) =>
+                        setPushForm((prev) => ({ ...prev, title: e.target.value }))
+                      }
+                      placeholder="Makluman Terkini JPP KMK"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-2.5 text-sm text-gray-900 focus:bg-white focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="push-body"
+                      className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5"
+                    >
+                      Mesej Hebahan
+                    </label>
+                    <textarea
+                      id="push-body"
+                      rows={4}
+                      required
+                      value={pushForm.body}
+                      onChange={(e) =>
+                        setPushForm((prev) => ({ ...prev, body: e.target.value }))
+                      }
+                      placeholder="Kafe C dibuka semula seperti biasa bermula jam 5.00 petang."
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-2.5 text-sm text-gray-900 focus:bg-white focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 resize-y"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="push-url"
+                      className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5"
+                    >
+                      Pautan Destinasi
+                    </label>
+                    <select
+                      id="push-url"
+                      value={pushForm.url}
+                      onChange={(e) =>
+                        setPushForm((prev) => ({ ...prev, url: e.target.value }))
+                      }
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-2.5 text-sm text-gray-900 focus:bg-white focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
+                    >
+                      <option value="/">Laman Utama (/)</option>
+                      <option value="/live-board">Live Board Kafe (/live-board)</option>
+                      <option value="/takwim">Takwim (/takwim)</option>
+                      <option value="/organisasi">Organisasi (/organisasi)</option>
+                    </select>
+                  </div>
+
+                  <div className="pt-2">
+                    <button
+                      type="submit"
+                      disabled={pushSending}
+                      className="inline-flex items-center justify-center gap-2 bg-[#1f1d6b] hover:bg-indigo-900 disabled:opacity-60 text-cyan-300 text-xs sm:text-sm font-bold px-5 py-3 rounded-xl transition-colors cursor-pointer shadow-sm"
+                    >
+                      {pushSending ? (
+                        <>
+                          <Loader2 size={16} className="animate-spin" />
+                          <span>Sedang Menghantar...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send size={16} />
+                          <span>Hantar Notifikasi ke Semua Pelajar</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
               </div>
             )}
 

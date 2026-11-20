@@ -28,6 +28,7 @@ import { useNavigate } from "react-router";
 import { collection, doc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 import { DEFAULT_KAFE_LIST } from "./LiveBoard";
+import PushNotificationPrompt from "../components/PushNotificationPrompt";
 
 // 174 slide banner
 // 217 pengurusan tertinggi
@@ -41,7 +42,7 @@ import { DEFAULT_KAFE_LIST } from "./LiveBoard";
 //
 
 // renew gambar dekat sni
-import LogoJppKMK from "../logo kmk jpp.jpeg";
+import LogoJppKMK from "../jppkmklogo.png";
 import QrImage from "../image/sampah ii/qr.jpg";
 import Banner1 from "../image/sampah ii/jppfull.jpg";
 import Banner2 from "../image/sampah ii/revamp.jpg";
@@ -945,6 +946,9 @@ export default function App() {
 
       {/* Kandungan Bahagian Bawah (Animasi Skrol Masuk) */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 space-y-12 md:space-y-16">
+        {/* Banner Langganan Web Push Notification (PWA + FCM) */}
+        <PushNotificationPrompt />
+
         {/* Widget Mini Status Kafe */}
         <RevealOnScroll direction="bottom" delay={50}>
           <section className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-6">

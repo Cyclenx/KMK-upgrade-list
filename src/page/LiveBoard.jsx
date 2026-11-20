@@ -17,7 +17,7 @@ import {
 import { useNavigate } from "react-router";
 import { collection, doc, setDoc, increment, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
-import LogoJppKMK from "../logo kmk jpp.jpeg";
+import LogoJppKMK from "../jppkmklogo.png";
 
 export const DEFAULT_KAFE_LIST = [
   {

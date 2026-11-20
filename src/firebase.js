@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics, logEvent } from "firebase/analytics";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getMessaging, isSupported } from "firebase/messaging";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC3GJMivZzcaNqZ2vw7e_qV_AWKTkp0U5M",
@@ -28,6 +29,17 @@ if (typeof window !== "undefined") {
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 export const db = getFirestore(app);
+
+let messagingPromise = null;
+export async function getFirebaseMessaging() {
+  if (typeof window === "undefined") return null;
+  if (!messagingPromise) {
+    messagingPromise = isSupported()
+      .then((supported) => (supported ? getMessaging(app) : null))
+      .catch(() => null);
+  }
+  return messagingPromise;
+}
 export const DEVELOPER_EMAILS = [
   "halimhafizhan1059@gmail.com",
   "ffafif719@gmail.com",
