@@ -1197,22 +1197,22 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="relative bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden min-h-[260px] sm:min-h-[280px]">
+                <div className="relative bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden min-h-[450px] sm:min-h-[320px]">
                   {managementList.map((person, idx) => {
                     const isSelected = idx === currentMgmtSlide;
                     return (
                       <div
                         key={person.id}
-                        className={`absolute inset-0 flex flex-col sm:flex-row transition-[transform,opacity] duration-500 ease-editorial motion-reduce:transition-none ${isSelected
-                          ? "opacity-100 z-10 translate-x-0"
-                          : "opacity-0 z-0 pointer-events-none translate-x-4"
+                        className={`flex flex-col sm:flex-row transition-[transform,opacity] duration-500 ease-editorial motion-reduce:transition-none ${isSelected
+                          ? "relative opacity-100 z-10 translate-x-0"
+                          : "absolute inset-0 opacity-0 z-0 pointer-events-none translate-x-4"
                           }`}
                       >
-                        <div className="h-44 sm:h-full sm:w-2/5 relative overflow-hidden bg-indigo-950 shrink-0">
+                        <div className="h-72 sm:h-80 sm:w-2/5 relative overflow-hidden bg-indigo-950 shrink-0">
                           <img
                             src={person.image}
                             alt={person.nama}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover object-top"
                           />
                           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent px-3 py-2">
                             <span className="text-[10px] font-bold text-cyan-300 uppercase tracking-wider block text-center">
