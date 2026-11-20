@@ -31,6 +31,8 @@ export const db = getFirestore(app);
 export const DEVELOPER_EMAILS = [
   "halimhafizhan1059@gmail.com",
   "ffafif719@gmail.com",
+  "cochafizan@gmail.com",
+  "aleeyafrsya22@gmail.com",
 ];
 
 export function trackPageView(pathname) {
