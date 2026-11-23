@@ -44,10 +44,11 @@ import PushNotificationPrompt from "../components/PushNotificationPrompt";
 
 // renew gambar dekat sni
 import LogoJppKMK from "../jppkmklogo.png";
-import QrImage from "../image/sampah ii/qr.jpg";
 import Banner1 from "../image/sampah ii/jppfull.jpg";
 import Banner2 from "../image/sampah ii/revamp.jpg";
 import Banner3 from "../image/sampah ii/kmk2.jpg";
+
+const QrImage = "/sijil.jpg";
 
 // Pembantu untuk menyokong laluan gambar tempatan (src/image/...) dan URL luar
 let localImageContext = null;
@@ -1062,7 +1063,7 @@ export default function App() {
                   />
                 </div>
                 <p className="mt-3 text-center text-xs font-medium text-gray-500">
-                  Imbas kod QR ini untuk akses pantas portal &amp; saluran rasmi KMK
+                  Imbas kod QR ini untuk akses e-Cert
                 </p>
               </div>
             </div>
