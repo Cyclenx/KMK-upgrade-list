@@ -10,7 +10,6 @@ import {
   ArrowRight,
   Share2,
   Volume2,
-  Accessibility,
   Menu,
   X,
   ExternalLink,
@@ -1818,16 +1817,6 @@ export default function App() {
           </div>
         </div>
       )}
-
-      {/* Butang Aksesibiliti */}
-      <div className="fixed bottom-4 left-4 z-40">
-        <button
-          className="bg-indigo-900/90 backdrop-blur hover:bg-cyan-600 hover:scale-105 active:scale-95 text-white p-2.5 rounded-full shadow-xl transition-[transform,background-color] duration-300 ease-editorial border border-white/20 motion-reduce:transition-none motion-reduce:hover:scale-100"
-          aria-label="Pilihan Aksesibiliti"
-        >
-          <Accessibility size={20} />
-        </button>
-      </div>
     </div>
   );
 }
