@@ -387,7 +387,7 @@ export default function App() {
     },
     {
       id: "default_2",
-      tajuk: "Semak status operasi Kafe A, B & C secara masa nyata di Live Board",
+      tajuk: "Semak status operasi Cafe A, B & C secara masa nyata di Live Board",
       status: "Info",
     },
   ]);
@@ -904,24 +904,11 @@ export default function App() {
                 </h1>
                 <p
                   style={{ animationDelay: "100ms" }}
-                  className={`text-xs sm:text-base text-gray-200 mb-6 line-clamp-3 leading-relaxed font-normal drop-shadow ${index === currentSlide ? "animate-hero-in" : ""
+                  className={`text-xs sm:text-base text-gray-200 line-clamp-3 leading-relaxed font-normal drop-shadow ${index === currentSlide ? "animate-hero-in" : ""
                     }`}
                 >
                   {slide.description}
                 </p>
-                {slide.link && (
-                  <button
-                    style={{ animationDelay: "180ms" }}
-                    onClick={() => navigate(slide.link)}
-                    className={`group inline-flex items-center gap-2.5 text-white text-sm sm:text-base font-semibold hover:text-cyan-400 transition-colors duration-300 ease-editorial motion-reduce:transition-none ${index === currentSlide ? "animate-hero-in" : ""
-                      }`}
-                  >
-                    <span className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-2 border-white group-hover:border-cyan-400 group-hover:bg-cyan-400/15 flex items-center justify-center group-hover:translate-x-1 transition-[transform,border-color,background-color] duration-300 ease-editorial motion-reduce:transition-none motion-reduce:group-hover:translate-x-0">
-                      <ArrowRight size={16} />
-                    </span>
-                    <span>{slide.linkText || "Ketahui lagi"}</span>
-                  </button>
-                )}
               </div>
             ))}
           </div>
@@ -980,7 +967,7 @@ export default function App() {
                 </div>
                 <div>
                   <h2 className="text-base sm:text-lg font-extrabold text-[#1f1d6b] leading-tight">
-                    Status Operasi Kafe Semasa
+                    Status Operasi Cafe Semasa
                   </h2>
                   <p className="text-[11px] text-gray-500">
                     Kemas kini masa nyata daripada Live Board JPP KMK
@@ -1679,25 +1666,10 @@ export default function App() {
             </div>
           </div>
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pt-4 border-t border-indigo-900 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-gray-400">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pt-4 border-t border-indigo-900 flex items-center justify-center text-center text-[11px] text-gray-400">
             <p>
               © {new Date().getFullYear()} Kolej Matrikulasi Kedah. Hak Cipta Terpelihara.
             </p>
-            <div className="text-gray-300 text-center sm:text-right space-y-0.5">
-              <p>
-                Dibangunkan oleh{" "}
-                <span className="font-semibold text-cyan-400">
-                  Muhammad Hafizhan Haziq
-                </span>{" "}
-                • Biro Penerangan &amp; Penerbitan JPP KMK
-              </p>
-              <p>
-                bersama{" "}
-                <span className="font-semibold text-cyan-400">
-                  Afif Huzaifah
-                </span>
-              </p>
-            </div>
           </div>
         </footer>
       </RevealOnScroll>

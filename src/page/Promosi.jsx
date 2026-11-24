@@ -480,7 +480,7 @@ export default function Promosi() {
               Ruang Promosi Aktiviti &amp; Jualan Pelajar KMK
             </h1>
             <p className="text-xs sm:text-sm text-slate-200 mt-2.5 leading-relaxed">
-              Terokai program pelajar, bengkel jurusan dan gerai jualan mahasiswa di Kolej Matrikulasi Kedah, atau serahkan promosi anda untuk disiarkan di portal.
+              Terokai program pelajar, gerai jualan pelajar di Kolej Matrikulasi Kedah.
             </p>
           </div>
 
@@ -1013,7 +1013,7 @@ export default function Promosi() {
                   placeholder={
                     formData.jenis === "aktiviti"
                       ? "cth: Dewan Kuliah 1 (DK1)"
-                      : "cth: Foyer Kafe B / COD Blok Kediaman"
+                      : "cth: Foyer Cafe B / COD Blok Kediaman"
                   }
                   className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm"
                 />

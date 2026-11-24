@@ -178,7 +178,7 @@ export function buildWhatsappText(kafeItems, timelineItems) {
     "*📢 HEBAHAN RASMI JPP KMK*",
     `_Kemas kini: ${nowText}_`,
     "",
-    "*🍽️ STATUS KAFE:*",
+    "*🍽️ STATUS CAFE:*",
     ...(kafeLines.length ? kafeLines : ["• Tiada maklumat"]),
     "",
     "*📌 MAKLUMAN TERKINI:*",
@@ -346,10 +346,10 @@ export async function generatePosterDataUrl(kafeItems, timelineItems) {
   ctx.font = `500 30px ${FONT}`;
   ctx.fillText(`Kemas kini: ${nowText}`, 80, 470);
 
-  // Seksyen: Status Kafe
+  // Seksyen: Status Cafe
   ctx.fillStyle = "#22d3ee";
   ctx.font = `800 44px ${FONT}`;
-  ctx.fillText("STATUS KAFE", 80, 560);
+  ctx.fillText("STATUS CAFE", 80, 560);
   ctx.fillRect(80, 578, 120, 6);
 
   const kafeToShow = kafeItems.slice(0, 3);
@@ -731,7 +731,7 @@ export default function LiveBoard() {
               <span>Makluman Masa Nyata Kolej</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-extrabold text-[#1f1d6b] tracking-tight">
-              Papan Informasi &amp; Status Kafe
+              Papan Informasi &amp; Status Cafe
             </h1>
             <p className="text-xs sm:text-sm text-gray-500 mt-1">
               Disambung secara langsung ke pangkalan data • Kemas kini terakhir:{" "}
@@ -779,17 +779,17 @@ export default function LiveBoard() {
           </button>
         </div>
 
-        {/* Grid 2 Bahagian: Kiri (Status Operasi Kafe) & Kanan (Timeline) */}
+        {/* Grid 2 Bahagian: Kiri (Status Operasi Cafe) & Kanan (Timeline) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
-          {/* Bahagian Kiri: Status Operasi Kafe */}
+          {/* Bahagian Kiri: Status Operasi Cafe */}
           <section className="lg:col-span-5 space-y-4">
             <div className="flex items-center justify-between border-b-2 border-cyan-500 pb-2">
               <h2 className="text-[#1f1d6b] text-lg sm:text-xl font-bold uppercase tracking-wider flex items-center gap-2">
                 <Coffee size={20} className="text-cyan-600" />
-                <span>Status Operasi Kafe</span>
+                <span>Status Operasi Cafe</span>
               </h2>
               <span className="text-xs font-semibold bg-indigo-50 text-[#1f1d6b] px-2.5 py-0.5 rounded-full border border-indigo-100">
-                {kafeItems.length} Kafe
+                {kafeItems.length} Cafe
               </span>
             </div>
 

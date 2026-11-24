@@ -280,7 +280,7 @@ export default function PushNotificationPrompt() {
                   <p className="text-xs text-slate-300 mt-0.5 leading-relaxed">
                     {subscribed && permission === "granted"
                       ? "Peranti anda telah didaftarkan untuk menerima hebahan penting & kemas kini Live Board."
-                      : "Aktifkan notifikasi segera bagi hebahan kampus, status kafe dan pengumuman penting JPP."}
+                      : "Aktifkan notifikasi segera bagi hebahan kampus, status cafe dan pengumuman penting JPP."}
                   </p>
                   {errorMsg && (
                     <p className="mt-1.5 inline-flex items-center gap-1.5 text-xs text-amber-300">

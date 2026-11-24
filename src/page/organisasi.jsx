@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ArrowLeft, Users, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
+import { ArrowLeft, Users, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router";
 
 // Imbas semua gambar di dalam folder src/image/ secara synchronous
@@ -115,9 +115,7 @@ function BureauFocusSlider({ group, navigate }) {
               <div
                 key={member.id}
                 onClick={() => {
-                  if (isCenter) {
-                    navigate(`/organisasi/${member.id}`);
-                  } else {
+                  if (!isCenter) {
                     setActiveIndex(idx);
                   }
                 }}
@@ -125,10 +123,10 @@ function BureauFocusSlider({ group, navigate }) {
                   transform: `translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
                   zIndex: zIndex,
                 }}
-                className={`absolute w-52 sm:w-60 bg-white rounded-2xl shadow-lg border transition-all duration-500 ease-out cursor-pointer overflow-hidden flex flex-col will-change-transform ${
+                className={`absolute w-52 sm:w-60 bg-white rounded-2xl shadow-lg border transition-all duration-500 ease-out overflow-hidden flex flex-col will-change-transform ${
                   isCenter
                     ? "border-cyan-400 ring-4 ring-cyan-400/25 shadow-2xl shadow-indigo-900/15"
-                    : "border-slate-200 hover:border-cyan-300"
+                    : "border-slate-200 hover:border-cyan-300 cursor-pointer"
                 }`}
               >
                 <div className="w-full h-67 sm:h-80 bg-slate-100 overflow-hidden relative shrink-0">
@@ -141,11 +139,6 @@ function BureauFocusSlider({ group, navigate }) {
                       e.target.src = fallbackAvatar;
                     }}
                   />
-                  {isCenter && (
-                    <div className="absolute top-2.5 right-2.5 bg-[#1f1d6b]/85 backdrop-blur-md text-cyan-300 p-1.5 rounded-full shadow-md">
-                      <ExternalLink size={14} />
-                    </div>
-                  )}
                 </div>
 
                 <div className="p-3.5 text-center flex flex-col justify-center items-center bg-white flex-grow">

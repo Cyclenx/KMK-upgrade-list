@@ -59,7 +59,7 @@ import {
 } from "./LiveBoard";
 
 const ALL_TABS = [
-  { id: "kafe_timeline", label: "Kafe & Timeline", icon: Coffee },
+  { id: "kafe_timeline", label: "Cafe & Timeline", icon: Coffee },
   { id: "notifikasi", label: "Notifikasi", icon: BellRing },
   { id: "promosi", label: "Kelulusan Promosi", icon: Megaphone },
   { id: "galeri", label: "Galeri Album", icon: ImageIcon },
@@ -70,7 +70,7 @@ const ALL_TABS = [
 ];
 
 const ASSIGNABLE_MODULES = [
-  { id: "kafe_timeline", label: "Kafe & Timeline" },
+  { id: "kafe_timeline", label: "Cafe & Timeline" },
   { id: "notifikasi", label: "Notifikasi" },
   { id: "promosi", label: "Kelulusan Promosi" },
   { id: "galeri", label: "Galeri Album" },
@@ -636,12 +636,12 @@ export default function Admin() {
         masa: masaSekarang,
       });
       await recordLog(
-        "Kemas Kini Status Kafe",
+        "Kemas Kini Status Cafe",
         `${kafe.tajuk} -> ${kafe.status}`
       );
       showToast(`${kafe.tajuk} berjaya dikemas kini!`);
     } catch (err) {
-      showToast(`Ralat menyimpan kafe: ${err.message}`);
+      showToast(`Ralat menyimpan cafe: ${err.message}`);
     }
   };
 
@@ -1223,7 +1223,7 @@ export default function Admin() {
                 {/* Kemas Kini Status Kafe */}
                 <div className="lg:col-span-6 space-y-4">
                   <h2 className="text-lg font-bold text-[#1f1d6b] border-b-2 border-cyan-500 pb-2">
-                    Status Operasi Kafe (A, B, C)
+                    Status Operasi Cafe (A, B, C)
                   </h2>
                   {kafeList.map((kafe, idx) => (
                     <div
@@ -1311,7 +1311,7 @@ export default function Admin() {
                         className="inline-flex items-center gap-1.5 bg-[#1f1d6b] hover:bg-indigo-900 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-colors cursor-pointer"
                       >
                         <Save size={14} />
-                        <span>Simpan Status Kafe</span>
+                        <span>Simpan Status Cafe</span>
                       </button>
                     </div>
                   ))}
@@ -2261,7 +2261,7 @@ export default function Admin() {
                   },
                   {
                     name: "liveboard_kafe",
-                    label: "Status Kafe",
+                    label: "Status Cafe",
                     docs: kafeList,
                   },
                   {
@@ -2505,7 +2505,7 @@ export default function Admin() {
                       onChange={(e) =>
                         setPushForm((prev) => ({ ...prev, body: e.target.value }))
                       }
-                      placeholder="Kafe C dibuka semula seperti biasa bermula jam 5.00 petang."
+                      placeholder="Cafe C dibuka semula seperti biasa bermula jam 5.00 petang."
                       className="w-full rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-2.5 text-sm text-gray-900 focus:bg-white focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 resize-y"
                     />
                   </div>
@@ -2526,7 +2526,7 @@ export default function Admin() {
                       className="w-full rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-2.5 text-sm text-gray-900 focus:bg-white focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20"
                     >
                       <option value="/">Laman Utama (/)</option>
-                      <option value="/live-board">Live Board Kafe (/live-board)</option>
+                      <option value="/live-board">Live Board Cafe (/live-board)</option>
                       <option value="/takwim">Takwim (/takwim)</option>
                       <option value="/organisasi">Organisasi (/organisasi)</option>
                     </select>
