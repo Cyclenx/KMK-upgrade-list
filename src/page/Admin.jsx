@@ -1006,6 +1006,8 @@ export default function Admin() {
     if (role === "admin") {
       return (
         tabId === "kafe_timeline" ||
+        tabId === "notifikasi" ||
+        tabId === "promosi" ||
         tabId === "galeri" ||
         tabId === "aktiviti" ||
         tabId === "logs"
