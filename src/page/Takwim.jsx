@@ -710,9 +710,9 @@ export default function Takwim() {
             >
               <ArrowLeft
                 size={16}
-                className="transition-transform group-hover:-translate-x-1"
+                className="transition-transform group-hover:-translate-x-1 shrink-0"
               />
-              <span>← Laman Utama</span>
+              <span>Laman Utama</span>
             </button>
           </div>
 
