@@ -700,7 +700,7 @@ export default function App() {
           {/* Bar Atas Rasmi */}
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex items-center justify-between border-b border-white/15">
             <span className="text-xs sm:text-sm md:text-base font-extrabold tracking-wide text-white drop-shadow-sm">
-              Laman Web Rasmi JABATAN PERWAKILAN PELAJAR KOLEJ MATRIKULASI KEDAH
+              Laman Web Rasmi JAWATANKUASA PERWAKILAN PELAJAR KOLEJ MATRIKULASI KEDAH
             </span>
           </div>
 
