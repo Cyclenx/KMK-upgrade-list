@@ -209,7 +209,7 @@ const OrganizationPage = () => {
       id: 1,
       name: "Majlis Tertinggi",
       folder: "MT",
-      peranan: "Merangka dasar pentadbiran, memimpin hal tuju kepimpinan serta menyelaras hubungan antara mahasiswa dan pengurusan kolej.",
+      peranan: "Merangka dasar pentadbiran, memimpin hal tuju kepimpinan serta menyelaras hubungan antara pelajar dan pengurusan kolej.",
       members: [
         { id: 101, name: "MOHAMAD ZAWIR DANISH BIN MOHAMAD ZARIR", role: "Yang Dipertua", file: "zawir.jpg" },
         { id: 102, name: "NUR KAMALIN SOFEA BINTI MUHD SHAHRIN", role: "Naib Yang Dipertua", file: "kamalin.jpg" },
@@ -312,7 +312,7 @@ const OrganizationPage = () => {
       id: 8,
       name: "Kebajikan",
       folder: "EXCO KEBAJIKAN",
-      peranan: "Menjaga kesejahteraan hidup pelajar, menguruskan bantuan kecemasan, dana prihatin serta mengendalikan saluran aduan mahasiswa.",
+      peranan: "Menjaga kesejahteraan hidup pelajar, menguruskan bantuan kecemasan, dana prihatin serta mengendalikan saluran aduan pelajar.",
       members: [
         { id: 801, name: "FATIN NAJIHA BINTI MOHD NOR", role: "Ketua Exco Kebajikan", file: "fatin.jpg" },
         { id: 802, name: "ISFAHAN BIN SYAKIRIN", role: "Penolong Ketua Exco Kebajikan", file: "isfahan.jpg" },
@@ -341,7 +341,7 @@ const OrganizationPage = () => {
           </button>
           <div className="flex items-center gap-2 text-xs text-gray-200 bg-white/10 px-3 py-1 rounded-full border border-white/10">
             <Users size={14} className="text-cyan-400" />
-            <span className="font-medium">{totalMembers} Pemimpin Mahasiswa</span>
+            <span className="font-medium">{totalMembers} Pemimpin Pelajar</span>
           </div>
         </div>
       </nav>

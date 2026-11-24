@@ -191,7 +191,7 @@ export default function Cadangan() {
           </button>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 text-xs font-semibold uppercase tracking-wider mb-3">
             <Sparkles size={14} />
-            Suara Mahasiswa & Warga Kolej
+            Suara Pelajar & Warga Kolej
           </div>
           <h1 className="text-2xl sm:text-4xl font-black uppercase tracking-tight mb-2">
             Portal Cadangan Penambahbaikan

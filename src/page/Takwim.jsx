@@ -35,7 +35,7 @@ const TAKWIM_STATIONS = [
     logo: "/logos/logo-krs.jpg",
     phase: "SEPTEMBER 2026",
     phaseKey: "SEPT 2026",
-    info: "Karnival jualan dan aktiviti keusahawanan mahasiswa sepanjang 6 hingga 16 September 2026.",
+    info: "Karnival jualan dan aktiviti keusahawanan pelajar sepanjang 6 hingga 16 September 2026.",
   },
   {
     id: 3,
